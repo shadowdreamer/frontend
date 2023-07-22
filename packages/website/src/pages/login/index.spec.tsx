@@ -1,21 +1,22 @@
 import { fireEvent, render, waitFor } from '@testing-library/react';
 import { rest } from 'msw';
 import React from 'react';
-import * as MockReact from 'react';
-import { useNavigate } from 'react-router-dom';
+import { HelmetProvider } from 'react-helmet-async';
+import { useLocation, useNavigate, useSearchParams } from 'react-router-dom';
 
-import { UserProvider } from '../../hooks/use-user';
+import { UserProvider } from '@bangumi/website/hooks/use-user';
+
 import { server as mockServer } from '../../mocks/server';
 import LoginPage from '.';
 
-jest.mock('@marsidev/react-turnstile', () => {
-  const Turnstile = MockReact.forwardRef<
+vi.mock('@marsidev/react-turnstile', () => {
+  const Turnstile = React.forwardRef<
     { reset?: () => void },
     { onSuccess?: (token: string) => void }
   >(({ onSuccess }, ref) => {
-    MockReact.useImperativeHandle(ref, () => ({ reset: () => undefined }));
+    React.useImperativeHandle(ref, () => ({ reset: () => undefined }));
 
-    MockReact.useEffect(() => {
+    React.useEffect(() => {
       onSuccess?.('fake-token');
     });
 
@@ -25,8 +26,19 @@ jest.mock('@marsidev/react-turnstile', () => {
   return { Turnstile };
 });
 
-jest.mock('react-router-dom');
-const mockedUseNavigate = jest.mocked(useNavigate);
+vi.mock('react-router-dom');
+const mockedUseNavigate = vi.mocked(useNavigate);
+const mockedUseLocation = vi.mocked(useLocation);
+const mockedUseSearchParams = vi.mocked(useSearchParams);
+
+const renderLoginPage = () =>
+  render(
+    <HelmetProvider>
+      <UserProvider>
+        <LoginPage />
+      </UserProvider>
+    </HelmetProvider>,
+  );
 
 function mockLogin(
   statusCode: number,
@@ -34,22 +46,16 @@ function mockLogin(
   headers: Record<string, string | string[]> = {},
 ): void {
   mockServer.use(
-    rest.post('http://localhost/p1/login2', (req, res, ctx) => {
+    rest.post('http://localhost:3000/p1/login', async (req, res, ctx) => {
       return res(ctx.status(statusCode), ctx.set(headers), ctx.json(response));
     }),
   );
 }
 
-it('should redirect user to homepage after success login', async () => {
+function mockSuccessfulLogin() {
   mockLogin(200);
-  const mockedNavigate = jest.fn();
-  mockedUseNavigate.mockReturnValue(mockedNavigate);
 
-  const { getByPlaceholderText, getByText } = render(
-    <UserProvider>
-      <LoginPage />
-    </UserProvider>,
-  );
+  const { getByPlaceholderText, getByText } = renderLoginPage();
   const fakeEmail = 'fake-email';
   const fakePassword = 'fakepassword';
 
@@ -57,7 +63,45 @@ it('should redirect user to homepage after success login', async () => {
   fireEvent.input(getByPlaceholderText('你的登录密码'), { target: { value: fakePassword } });
 
   fireEvent.click(getByText('登录'));
+}
 
+it('should redirect user to homepage after success login', async () => {
+  const mockedNavigate = vi.fn();
+  mockedUseNavigate.mockReturnValue(mockedNavigate);
+  mockedUseLocation.mockReturnValue({ key: 'default' } as any);
+  mockedUseSearchParams.mockReturnValue([new URLSearchParams(), vi.fn()] as any);
+
+  mockSuccessfulLogin();
+  await waitFor(() => {
+    expect(mockedNavigate).toBeCalledWith('/', { replace: true });
+  });
+});
+
+it('should redirect user to specified page', async () => {
+  const mockedNavigate = vi.fn();
+  mockedUseNavigate.mockReturnValue(mockedNavigate);
+  mockedUseLocation.mockReturnValue({ key: 'default' } as any);
+  mockedUseSearchParams.mockReturnValue([
+    new URLSearchParams({ backTo: '/group/sandbox' }),
+    vi.fn(),
+  ] as any);
+
+  mockSuccessfulLogin();
+  await waitFor(() => {
+    expect(mockedNavigate).toBeCalledWith('/group/sandbox', { replace: true });
+  });
+});
+
+it('should redirect user to home if specified path is invalid', async () => {
+  const mockedNavigate = vi.fn();
+  mockedUseNavigate.mockReturnValue(mockedNavigate);
+  mockedUseLocation.mockReturnValue({ key: 'default' } as any);
+  mockedUseSearchParams.mockReturnValue([
+    new URLSearchParams({ backTo: 'https://bgm.tv/' }),
+    vi.fn(),
+  ] as any);
+
+  mockSuccessfulLogin();
   await waitFor(() => {
     expect(mockedNavigate).toBeCalledWith('/', { replace: true });
   });
@@ -83,11 +127,7 @@ it.each([
   'should show error message when response is $statusCode',
   async ({ statusCode, resp = {}, headers = {}, expectedError }) => {
     mockLogin(statusCode, resp, headers);
-    const { getByPlaceholderText, getByText } = render(
-      <UserProvider>
-        <LoginPage />
-      </UserProvider>,
-    );
+    const { getByPlaceholderText, getByText } = renderLoginPage();
     const fakeEmail = 'fake-email';
     const fakePassword = 'fakepassword';
 
@@ -103,11 +143,7 @@ it.each([
 );
 
 it('should validate user input', async () => {
-  const { getByPlaceholderText, getByText } = render(
-    <UserProvider>
-      <LoginPage />
-    </UserProvider>,
-  );
+  const { getByPlaceholderText, getByText } = renderLoginPage();
 
   fireEvent.click(getByText('登录'));
 

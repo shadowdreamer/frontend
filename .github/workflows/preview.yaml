@@ -5,17 +5,10 @@ name: Upload Preview
 on:
   workflow_run:
     workflows: ['Build', 'Storybook Build']
-    branches-ignore: [master]
     types:
       - completed
 
 jobs:
-  debug:
-    runs-on: ubuntu-latest
-    steps:
-      - run: echo '${{ toJSON(github) }}'
-      - run: echo 'upload-preview-${{ github.event.workflow_run.head_repository.owner.login }}-${{ github.event.workflow_run.head_branch }}'
-
   upload:
     concurrency:
       group: upload-preview-${{ github.event.workflow_run.head_repository.owner.login }}-${{ github.event.workflow_run.head_branch }}
@@ -26,7 +19,7 @@ jobs:
       - uses: actions/checkout@v3
       - uses: ./.github/actions/setup-js-env
 
-      - run: node ./.github/scripts/upload-preview.cjs
+      - run: npx tsx ./.github/scripts/upload-preview.mts
         env:
           workflow_name: '${{ github.event.workflow.name }}'
           GH_TOKEN: ${{ github.token }}

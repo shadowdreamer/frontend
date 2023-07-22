@@ -1,177 +1,241 @@
 /**
- * hello
+ * bangumi private api
  * DO NOT MODIFY - This file has been generated using oazapfts.
  * See https://www.npmjs.com/package/oazapfts
  */
 import * as Oazapfts from 'oazapfts/lib/runtime';
 import * as QS from 'oazapfts/lib/runtime/query';
-
 export const defaults: Oazapfts.RequestOpts = {
   baseUrl: '/',
 };
 const oazapfts = Oazapfts.runtime(defaults);
 export const servers = {};
-export interface Error {
+export type ErrorResponse = {
   code: string;
   error: string;
   message: string;
   statusCode: number;
-}
-export interface User {
-  id: number;
-  username: string;
-  nickname: string;
+};
+export type User = {
   avatar: {
-    small: string;
-    medium: string;
     large: string;
+    medium: string;
+    small: string;
   };
+  id: number;
+  nickname: string;
   sign: string;
   user_group: number;
-}
-export interface ValidationError {
-  error: string;
-  message: string;
-  statusCode: number;
-}
-export interface GroupMember {
-  avatar: {
-    small: string;
-    medium: string;
-    large: string;
-  };
-  id: number;
-  nickname: string;
   username: string;
-  joinedAt: number;
-}
-export interface Topic {
-  id: number;
-  creator: {
-    id: number;
-    username: string;
-    nickname: string;
-    avatar: {
-      small: string;
-      medium: string;
-      large: string;
-    };
-    sign: string;
-    user_group: number;
-  };
-  title: string;
-  parentID: number;
+};
+export type GroupReply = {
   createdAt: number;
-  updatedAt: number;
-  repliesCount: number;
-}
-export interface Group {
+  creator: User;
+  id: number;
+  state: number;
+  text: string;
+  topicID: number;
+  topicTitle: string;
+};
+export type Group = {
+  createdAt: number;
+  description: string;
+  icon: string;
   id: number;
   name: string;
   nsfw: boolean;
   title: string;
-  icon: string;
-  description: string;
   totalMembers: number;
+};
+export type Reaction = {
+  selected: boolean;
+  total: number;
+  value: number;
+};
+export type SubReply = {
   createdAt: number;
-}
-export interface GroupProfile {
-  recentAddedMembers: GroupMember[];
-  topics: Topic[];
-  inGroup: boolean;
-  group: Group;
-  totalTopics: number;
-}
-export interface SubReply {
-  id: number;
   creator: User;
-  createdAt: number;
-  isFriend: boolean;
-  text: string;
-  state: number;
-}
-export interface Reply {
   id: number;
   isFriend: boolean;
+  reactions: Reaction[];
+  state: number;
+  text: string;
+};
+export type Reply = {
+  createdAt: number;
+  creator: User;
+  id: number;
+  isFriend: boolean;
+  reactions: Reaction[];
   replies: SubReply[];
-  creator: User;
-  createdAt: number;
-  text: string;
   state: number;
-}
-export interface TopicDetail {
-  id: number;
+  text: string;
+};
+export type TopicDetail = {
+  createdAt: number;
+  creator: User;
   group: Group;
-  creator: User;
-  title: string;
-  text: string;
-  state: number;
-  createdAt: number;
+  id: number;
+  reactions: Reaction[];
   replies: Reply[];
-}
-export interface BasicReply {
-  id: number;
-  creator: User;
-  createdAt: number;
-  text: string;
   state: number;
-}
-export interface Notice {
-  id: number;
+  text: string;
   title: string;
-  type: number;
-  sender: {
-    id: number;
-    username: string;
-    nickname: string;
+};
+export type TopicCreation = {
+  text: string;
+  title: string;
+};
+export type BasicReply = {
+  createdAt: number;
+  creator: User;
+  id: number;
+  state: number;
+  text: string;
+};
+export type GroupMember = {
+  avatar: {
+    large: string;
+    medium: string;
+    small: string;
+  };
+  id: number;
+  joinedAt: number;
+  nickname: string;
+  username: string;
+};
+export type Topic = {
+  createdAt: number;
+  creator: {
     avatar: {
-      small: string;
-      medium: string;
       large: string;
+      medium: string;
+      small: string;
     };
+    id: number;
+    nickname: string;
     sign: string;
     user_group: number;
+    username: string;
   };
-  topicID: number;
-  postID: number;
+  id: number;
+  parentID: number;
+  repliesCount: number;
+  title: string;
+  updatedAt: number;
+};
+export type GroupProfile = {
+  group: Group;
+  inGroup: boolean;
+  recentAddedMembers: GroupMember[];
+  topics: Topic[];
+  totalTopics: number;
+};
+export type LoginRequestBody = {
+  'cf-turnstile-response': string;
+  email: string;
+  password: string;
+};
+export type CurrentUser = {
+  avatar: {
+    large: string;
+    medium: string;
+    small: string;
+  };
+  id: number;
+  nickname: string;
+  sign: string;
+  user_group: number;
+  username: string;
+} & {
+  permission: {
+    subjectWikiEdit: boolean;
+  };
+};
+export type Notice = {
   createdAt: number;
-}
-export type SubjectType = 1 | 2 | 3 | 4 | 6;
-export interface WikiPlatform {
+  id: number;
+  postID: number;
+  sender: {
+    avatar: {
+      large: string;
+      medium: string;
+      small: string;
+    };
+    id: number;
+    nickname: string;
+    sign: string;
+    user_group: number;
+    username: string;
+  };
+  title: string;
+  topicID: number;
+  type: number;
+  unread: boolean;
+};
+export type WikiPlatform = {
   id: number;
   text: string;
   wiki_tpl?: string;
-}
-export interface SubjectWikiInfo {
-  id: number;
-  name: string;
-  typeID: SubjectType;
-  infobox: string;
-  platform: number;
+};
+export type SubjectType = 1 | 2 | 3 | 4 | 6;
+export type SubjectWikiInfo = {
   availablePlatform: WikiPlatform[];
-  summary: string;
-  nsfw: boolean;
-}
-export interface SubjectEdit {
-  name: string;
+  id: number;
   infobox: string;
-  platform: number;
+  name: string;
   nsfw: boolean;
-  date?: string;
+  platform: number;
   summary: string;
-}
-export interface HistorySummary {
+  typeID: SubjectType;
+};
+export type SubjectEdit = {
+  date?: string;
+  infobox: string;
+  name: string;
+  nsfw: boolean;
+  platform: number;
+  summary: string;
+};
+export type HistorySummary = {
+  commitMessage: string;
+  createdAt: number;
   creator: {
     username: string;
   };
   type: number;
-  commitMessage: string;
-  createdAt: number;
-}
+};
 /**
- * 登出
+ * 标记通知为已读
  */
-export async function logout(body?: {}, opts?: Oazapfts.RequestOpts) {
+export function clearNotice(
+  body?: {
+    id?: number[];
+  },
+  opts?: Oazapfts.RequestOpts,
+) {
+  return oazapfts.fetchJson<
+    | {
+        status: 200;
+      }
+    | {
+        status: 401;
+        data: ErrorResponse;
+      }
+    | {
+        status: 500;
+        data: ErrorResponse;
+      }
+  >(
+    '/p1/clear-notify',
+    oazapfts.json({
+      ...opts,
+      method: 'POST',
+      body,
+    }),
+  );
+}
+export function deleteGroupPost(postId: number, opts?: Oazapfts.RequestOpts) {
   return oazapfts.fetchJson<
     | {
         status: 200;
@@ -179,127 +243,72 @@ export async function logout(body?: {}, opts?: Oazapfts.RequestOpts) {
       }
     | {
         status: 401;
-        data: Error;
+        data: ErrorResponse;
+      }
+    | {
+        status: 404;
+        data: ErrorResponse;
       }
     | {
         status: 500;
-        data: Error;
+        data: ErrorResponse;
       }
-  >(
-    '/p1/logout',
-    oazapfts.json({
-      ...opts,
-      method: 'POST',
-      body,
-    }),
-  );
+  >(`/p1/groups/-/posts/${encodeURIComponent(postId)}`, {
+    ...opts,
+    method: 'DELETE',
+  });
 }
-/**
- * 需要 [turnstile](https://developers.cloudflare.com/turnstile/get-started/client-side-rendering/)
- *
- * next.bgm.tv 域名对应的 site-key 为 `0x4AAAAAAABkMYinukE8nzYS`
- *
- * dev.bgm38.com 域名使用测试用的 site-key `1x00000000000000000000AA`
- */
-export async function login2(
+export function getGroupPost(postId: number, opts?: Oazapfts.RequestOpts) {
+  return oazapfts.fetchJson<
+    | {
+        status: 200;
+        data: GroupReply;
+      }
+    | {
+        status: 404;
+        data: ErrorResponse;
+      }
+    | {
+        status: 500;
+        data: ErrorResponse;
+      }
+  >(`/p1/groups/-/posts/${encodeURIComponent(postId)}`, {
+    ...opts,
+  });
+}
+export function editGroupPost(
+  postId: number,
   body: {
-    email: string;
-    password: string;
-    'cf-turnstile-response': string;
+    text: string;
   },
   opts?: Oazapfts.RequestOpts,
 ) {
   return oazapfts.fetchJson<
     | {
         status: 200;
-        data: User;
-      }
-    | {
-        status: 400;
-        data: ValidationError;
+        data: {};
       }
     | {
         status: 401;
-        data: Error;
-      }
-    | {
-        status: 429;
-        data: Error;
+        data: ErrorResponse;
       }
     | {
         status: 500;
-        data: Error;
+        data: ErrorResponse;
       }
   >(
-    '/p1/login2',
+    `/p1/groups/-/posts/${encodeURIComponent(postId)}`,
     oazapfts.json({
       ...opts,
-      method: 'POST',
+      method: 'PUT',
       body,
     }),
-  );
-}
-export async function getCurrentUser(opts?: Oazapfts.RequestOpts) {
-  return oazapfts.fetchJson<
-    | {
-        status: 200;
-        data: User;
-      }
-    | {
-        status: 401;
-        data: Error;
-      }
-    | {
-        status: 500;
-        data: Error;
-      }
-  >('/p1/me', {
-    ...opts,
-  });
-}
-/**
- * 获取小组首页
- */
-export async function getGroupProfile(
-  groupName: string,
-  {
-    limit,
-    offset,
-  }: {
-    limit?: number;
-    offset?: number;
-  } = {},
-  opts?: Oazapfts.RequestOpts,
-) {
-  return oazapfts.fetchJson<
-    | {
-        status: 200;
-        data: GroupProfile;
-      }
-    | {
-        status: 404;
-        data: Error;
-      }
-    | {
-        status: 500;
-        data: Error;
-      }
-  >(
-    `/p1/groups/${encodeURIComponent(groupName)}/profile${QS.query(
-      QS.explode({
-        limit,
-        offset,
-      }),
-    )}`,
-    {
-      ...opts,
-    },
   );
 }
 /**
  * 获取帖子列表
  */
-export async function getGroupTopicDetail(id: number, opts?: Oazapfts.RequestOpts) {
+export function getGroupTopicDetail(id: number, opts?: Oazapfts.RequestOpts) {
   return oazapfts.fetchJson<
     | {
         status: 200;
@@ -307,20 +316,81 @@ export async function getGroupTopicDetail(id: number, opts?: Oazapfts.RequestOpt
       }
     | {
         status: 404;
-        data: Error;
+        data: ErrorResponse;
       }
     | {
         status: 500;
-        data: Error;
+        data: ErrorResponse;
       }
   >(`/p1/groups/-/topics/${encodeURIComponent(id)}`, {
     ...opts,
   });
 }
+export function editGroupTopic(
+  topicId: number,
+  topicCreation?: TopicCreation,
+  opts?: Oazapfts.RequestOpts,
+) {
+  return oazapfts.fetchJson<
+    | {
+        status: 200;
+        data: {};
+      }
+    | {
+        status: 400;
+        data: ErrorResponse;
+      }
+    | {
+        status: 401;
+        data: ErrorResponse;
+      }
+    | {
+        status: 500;
+        data: ErrorResponse;
+      }
+  >(
+    `/p1/groups/-/topics/${encodeURIComponent(topicId)}`,
+    oazapfts.json({
+      ...opts,
+      method: 'PUT',
+      body: topicCreation,
+    }),
+  );
+}
+export function createGroupReply(
+  topicId: number,
+  body: {
+    content: string;
+    replyTo?: number;
+  },
+  opts?: Oazapfts.RequestOpts,
+) {
+  return oazapfts.fetchJson<
+    | {
+        status: 200;
+        data: BasicReply;
+      }
+    | {
+        status: 401;
+        data: ErrorResponse;
+      }
+    | {
+        status: 500;
+        data: ErrorResponse;
+      }
+  >(
+    `/p1/groups/-/topics/${encodeURIComponent(topicId)}/replies`,
+    oazapfts.json({
+      ...opts,
+      method: 'POST',
+      body,
+    }),
+  );
+}
 /**
  * 获取帖子列表
  */
-export async function listGroupMembersByName(
+export function listGroupMembersByName(
   groupName: string,
   {
     $type,
@@ -343,11 +413,11 @@ export async function listGroupMembersByName(
       }
     | {
         status: 404;
-        data: Error;
+        data: ErrorResponse;
       }
     | {
         status: 500;
-        data: Error;
+        data: ErrorResponse;
       }
   >(
     `/p1/groups/${encodeURIComponent(groupName)}/members${QS.query(
@@ -363,9 +433,48 @@ export async function listGroupMembersByName(
   );
 }
 /**
+ * 获取小组首页
+ */
+export function getGroupProfile(
+  groupName: string,
+  {
+    limit,
+    offset,
+  }: {
+    limit?: number;
+    offset?: number;
+  } = {},
+  opts?: Oazapfts.RequestOpts,
+) {
+  return oazapfts.fetchJson<
+    | {
+        status: 200;
+        data: GroupProfile;
+      }
+    | {
+        status: 404;
+        data: ErrorResponse;
+      }
+    | {
+        status: 500;
+        data: ErrorResponse;
+      }
+  >(
+    `/p1/groups/${encodeURIComponent(groupName)}/profile${QS.query(
+      QS.explode({
+        limit,
+        offset,
+      }),
+    )}`,
+    {
+      ...opts,
+    },
+  );
+}
+/**
  * 获取帖子列表
  */
-export async function getGroupTopicsByGroupName(
+export function getGroupTopicsByGroupName(
   groupName: string,
   {
     limit,
@@ -386,11 +495,11 @@ export async function getGroupTopicsByGroupName(
       }
     | {
         status: 404;
-        data: Error;
+        data: ErrorResponse;
       }
     | {
         status: 500;
-        data: Error;
+        data: ErrorResponse;
       }
   >(
     `/p1/groups/${encodeURIComponent(groupName)}/topics${QS.query(
@@ -404,12 +513,9 @@ export async function getGroupTopicsByGroupName(
     },
   );
 }
-export async function createNewGroupTopic(
+export function createNewGroupTopic(
   groupName: string,
-  body: {
-    title: string;
-    content: string;
-  },
+  topicCreation?: TopicCreation,
   opts?: Oazapfts.RequestOpts,
 ) {
   return oazapfts.fetchJson<
@@ -421,10 +527,74 @@ export async function createNewGroupTopic(
       }
     | {
         status: 500;
-        data: Error;
+        data: ErrorResponse;
       }
   >(
     `/p1/groups/${encodeURIComponent(groupName)}/topics`,
+    oazapfts.json({
+      ...opts,
+      method: 'POST',
+      body: topicCreation,
+    }),
+  );
+}
+/**
+ * 需要 [turnstile](https://developers.cloudflare.com/turnstile/get-started/client-side-rendering/)
+ *
+ * next.bgm.tv 域名对应的 site-key 为 `0x4AAAAAAABkMYinukE8nzYS`
+ *
+ * dev.bgm38.com 域名使用测试用的 site-key `1x00000000000000000000AA`
+ */
+export function login(loginRequestBody?: LoginRequestBody, opts?: Oazapfts.RequestOpts) {
+  return oazapfts.fetchJson<
+    | {
+        status: 200;
+        data: User;
+      }
+    | {
+        status: 400;
+        data: ErrorResponse;
+      }
+    | {
+        status: 401;
+        data: ErrorResponse;
+      }
+    | {
+        status: 429;
+        data: ErrorResponse;
+      }
+    | {
+        status: 500;
+        data: ErrorResponse;
+      }
+  >(
+    '/p1/login',
+    oazapfts.json({
+      ...opts,
+      method: 'POST',
+      body: loginRequestBody,
+    }),
+  );
+}
+/**
+ * 登出
+ */
+export function logout(body?: {}, opts?: Oazapfts.RequestOpts) {
+  return oazapfts.fetchJson<
+    | {
+        status: 200;
+        data: {};
+      }
+    | {
+        status: 401;
+        data: ErrorResponse;
+      }
+    | {
+        status: 500;
+        data: ErrorResponse;
+      }
+  >(
+    '/p1/logout',
     oazapfts.json({
       ...opts,
       method: 'POST',
@@ -432,10 +602,69 @@ export async function createNewGroupTopic(
     }),
   );
 }
+export function getCurrentUser(opts?: Oazapfts.RequestOpts) {
+  return oazapfts.fetchJson<
+    | {
+        status: 200;
+        data: CurrentUser;
+      }
+    | {
+        status: 401;
+        data: ErrorResponse;
+      }
+    | {
+        status: 500;
+        data: ErrorResponse;
+      }
+  >('/p1/me', {
+    ...opts,
+  });
+}
+/**
+ * 获取未读通知
+ */
+export function listNotice(
+  {
+    limit,
+    unread,
+  }: {
+    limit?: number;
+    unread?: boolean;
+  } = {},
+  opts?: Oazapfts.RequestOpts,
+) {
+  return oazapfts.fetchJson<
+    | {
+        status: 200;
+        data: {
+          data: Notice[];
+          total: number;
+        };
+      }
+    | {
+        status: 401;
+        data: ErrorResponse;
+      }
+    | {
+        status: 500;
+        data: ErrorResponse;
+      }
+  >(
+    `/p1/notify${QS.query(
+      QS.explode({
+        limit,
+        unread,
+      }),
+    )}`,
+    {
+      ...opts,
+    },
+  );
+}
 /**
  * 获取帖子列表
  */
-export async function getSubjectTopicsBySubjectId(
+export function getSubjectTopicsBySubjectId(
   subjectId: number,
   {
     limit,
@@ -456,11 +685,11 @@ export async function getSubjectTopicsBySubjectId(
       }
     | {
         status: 404;
-        data: Error;
+        data: ErrorResponse;
       }
     | {
         status: 500;
-        data: Error;
+        data: ErrorResponse;
       }
   >(
     `/p1/subjects/${encodeURIComponent(subjectId)}/topics${QS.query(
@@ -474,251 +703,12 @@ export async function getSubjectTopicsBySubjectId(
     },
   );
 }
-export async function createGroupReply(
-  topicId: number,
-  body: {
-    replyTo?: number;
-    content: string;
-  },
-  opts?: Oazapfts.RequestOpts,
-) {
-  return oazapfts.fetchJson<
-    | {
-        status: 200;
-        data: BasicReply;
-      }
-    | {
-        status: 401;
-        data: Error;
-      }
-    | {
-        status: 500;
-        data: Error;
-      }
-  >(
-    `/p1/groups/-/topics/${encodeURIComponent(topicId)}/replies`,
-    oazapfts.json({
-      ...opts,
-      method: 'POST',
-      body,
-    }),
-  );
-}
-export async function editReply(
-  postId: number,
-  body: {
-    text: string;
-  },
-  opts?: Oazapfts.RequestOpts,
-) {
-  return oazapfts.fetchJson<
-    | {
-        status: 200;
-        data: {};
-      }
-    | {
-        status: 401;
-        data: Error;
-      }
-    | {
-        status: 500;
-        data: Error;
-      }
-  >(
-    `/p1/groups/-/posts/${encodeURIComponent(postId)}`,
-    oazapfts.json({
-      ...opts,
-      method: 'PUT',
-      body,
-    }),
-  );
-}
-/**
- * 获取未读通知
- */
-export async function listNotice(
-  {
-    limit,
-  }: {
-    limit?: number;
-  } = {},
-  opts?: Oazapfts.RequestOpts,
-) {
-  return oazapfts.fetchJson<
-    | {
-        status: 200;
-        data: {
-          data: Notice[];
-          total: number;
-        };
-      }
-    | {
-        status: 401;
-        data: Error;
-      }
-    | {
-        status: 500;
-        data: Error;
-      }
-  >(
-    `/p1/notify${QS.query(
-      QS.explode({
-        limit,
-      }),
-    )}`,
-    {
-      ...opts,
-    },
-  );
-}
-/**
- * 标记通知为已读
- */
-export async function clearNotice(
-  body?: {
-    id?: number[];
-  },
-  opts?: Oazapfts.RequestOpts,
-) {
-  return oazapfts.fetchJson<
-    | {
-        status: 200;
-      }
-    | {
-        status: 401;
-        data: Error;
-      }
-    | {
-        status: 500;
-        data: Error;
-      }
-  >(
-    '/p1/clear-notify',
-    oazapfts.json({
-      ...opts,
-      method: 'POST',
-      body,
-    }),
-  );
-}
-export async function listSubjectCovers(subjectId: number, opts?: Oazapfts.RequestOpts) {
-  return oazapfts.fetchJson<
-    | {
-        status: 200;
-        data: {
-          current?: {
-            thumbnail: string;
-            raw: string;
-          };
-          covers: Array<{
-            id: number;
-            thumbnail: string;
-            raw: string;
-            creator: {
-              id: number;
-              username: string;
-              nickname: string;
-              avatar: {
-                small: string;
-                medium: string;
-                large: string;
-              };
-              sign: string;
-              user_group: number;
-            };
-            voted: boolean;
-          }>;
-        };
-      }
-    | {
-        status: 500;
-        data: Error;
-      }
-  >(`/p1/wiki/subjects/${encodeURIComponent(subjectId)}/covers`, {
-    ...opts,
-  });
-}
-export async function uploadSubjectCover(
-  subjectId: number,
-  body: {
-    content: string;
-  },
-  opts?: Oazapfts.RequestOpts,
-) {
-  return oazapfts.fetchJson<
-    | {
-        status: 200;
-        data: {};
-      }
-    | {
-        status: 500;
-        data: Error;
-      }
-  >(
-    `/p1/wiki/subjects/${encodeURIComponent(subjectId)}/covers`,
-    oazapfts.json({
-      ...opts,
-      method: 'POST',
-      body,
-    }),
-  );
-}
-/**
- * 为条目封面投票
- */
-export async function voteSubjectCover(
-  subjectId: number,
-  imageId: number,
-  opts?: Oazapfts.RequestOpts,
-) {
-  return oazapfts.fetchJson<
-    | {
-        status: 200;
-        data: {};
-      }
-    | {
-        status: 500;
-        data: Error;
-      }
-  >(
-    `/p1/wiki/subjects/${encodeURIComponent(subjectId)}/covers/${encodeURIComponent(imageId)}/vote`,
-    {
-      ...opts,
-      method: 'POST',
-    },
-  );
-}
-/**
- * 撤消条目封面投票
- */
-export async function unvoteSubjectCover(
-  subjectId: number,
-  imageId: number,
-  opts?: Oazapfts.RequestOpts,
-) {
-  return oazapfts.fetchJson<
-    | {
-        status: 200;
-        data: {};
-      }
-    | {
-        status: 500;
-        data: Error;
-      }
-  >(
-    `/p1/wiki/subjects/${encodeURIComponent(subjectId)}/covers/${encodeURIComponent(imageId)}/vote`,
-    {
-      ...opts,
-      method: 'DELETE',
-    },
-  );
-}
 /**
  * 获取当前的 wiki 信息
  *
  * 暂时只能修改沙盒条目 184017, 309445, 354667, 354677, 363612
  */
-export async function subjectInfo(subjectId: number, opts?: Oazapfts.RequestOpts) {
+export function subjectInfo(subjectId: number, opts?: Oazapfts.RequestOpts) {
   return oazapfts.fetchJson<
     | {
         status: 200;
@@ -726,11 +716,11 @@ export async function subjectInfo(subjectId: number, opts?: Oazapfts.RequestOpts
       }
     | {
         status: 401;
-        data: Error;
+        data: ErrorResponse;
       }
     | {
         status: 500;
-        data: Error;
+        data: ErrorResponse;
       }
   >(`/p1/wiki/subjects/${encodeURIComponent(subjectId)}`, {
     ...opts,
@@ -739,7 +729,48 @@ export async function subjectInfo(subjectId: number, opts?: Oazapfts.RequestOpts
 /**
  * 暂时只能修改沙盒条目 184017,309445,354667,354677,363612
  */
-export async function putSubjectInfo(
+export function patchSubjectInfo(
+  subjectId: number,
+  body: {
+    commitMessage: string;
+    subject: {
+      date?: string;
+      infobox?: string;
+      name?: string;
+      nsfw?: boolean;
+      platform?: number;
+      summary?: string;
+    };
+  },
+  opts?: Oazapfts.RequestOpts,
+) {
+  return oazapfts.fetchJson<
+    | {
+        status: 200;
+      }
+    | {
+        status: 401;
+        data: ErrorResponse;
+      }
+    | {
+        status: 500;
+        data: ErrorResponse;
+      }
+  >(
+    `/p1/wiki/subjects/${encodeURIComponent(subjectId)}`,
+    oazapfts.json({
+      ...opts,
+      method: 'PATCH',
+      body,
+    }),
+  );
+}
+/**
+ * 暂时只能修改沙盒条目 184017,309445,354667,354677,363612
+ *
+ * 需要 `subjectWikiEdit` 权限
+ */
+export function putSubjectInfo(
   subjectId: number,
   body: {
     commitMessage: string;
@@ -753,11 +784,11 @@ export async function putSubjectInfo(
       }
     | {
         status: 401;
-        data: Error;
+        data: ErrorResponse;
       }
     | {
         status: 500;
-        data: Error;
+        data: ErrorResponse;
       }
   >(
     `/p1/wiki/subjects/${encodeURIComponent(subjectId)}`,
@@ -768,43 +799,124 @@ export async function putSubjectInfo(
     }),
   );
 }
+export function listSubjectCovers(subjectId: number, opts?: Oazapfts.RequestOpts) {
+  return oazapfts.fetchJson<
+    | {
+        status: 200;
+        data: {
+          covers: {
+            creator: {
+              avatar: {
+                large: string;
+                medium: string;
+                small: string;
+              };
+              id: number;
+              nickname: string;
+              sign: string;
+              user_group: number;
+              username: string;
+            };
+            id: number;
+            raw: string;
+            thumbnail: string;
+            voted: boolean;
+          }[];
+          current?: {
+            id: number;
+            raw: string;
+            thumbnail: string;
+          };
+        };
+      }
+    | {
+        status: 500;
+        data: ErrorResponse;
+      }
+  >(`/p1/wiki/subjects/${encodeURIComponent(subjectId)}/covers`, {
+    ...opts,
+  });
+}
 /**
- * 暂时只能修改沙盒条目 184017,309445,354667,354677,363612
+ * 需要 `subjectWikiEdit` 权限
  */
-export async function patchSubjectInfo(
+export function uploadSubjectCover(
   subjectId: number,
   body: {
-    commitMessage: string;
-    subject: {
-      name?: string;
-      infobox?: string;
-      platform?: number;
-      nsfw?: boolean;
-      date?: string;
-      summary?: string;
-    };
+    content: string;
   },
   opts?: Oazapfts.RequestOpts,
 ) {
   return oazapfts.fetchJson<
     | {
         status: 200;
+        data: {};
+      }
+    | {
+        status: 400;
+        data: ErrorResponse;
       }
     | {
         status: 401;
-        data: Error;
+        data: ErrorResponse;
       }
     | {
         status: 500;
-        data: Error;
+        data: ErrorResponse;
       }
   >(
-    `/p1/wiki/subjects/${encodeURIComponent(subjectId)}`,
+    `/p1/wiki/subjects/${encodeURIComponent(subjectId)}/covers`,
     oazapfts.json({
       ...opts,
-      method: 'PATCH',
+      method: 'POST',
       body,
     }),
+  );
+}
+/**
+ * 撤消条目封面投票
+ */
+export function unvoteSubjectCover(
+  subjectId: number,
+  imageId: number,
+  opts?: Oazapfts.RequestOpts,
+) {
+  return oazapfts.fetchJson<
+    | {
+        status: 200;
+        data: {};
+      }
+    | {
+        status: 500;
+        data: ErrorResponse;
+      }
+  >(
+    `/p1/wiki/subjects/${encodeURIComponent(subjectId)}/covers/${encodeURIComponent(imageId)}/vote`,
+    {
+      ...opts,
+      method: 'DELETE',
+    },
+  );
+}
+/**
+ * 为条目封面投票
+ */
+export function voteSubjectCover(subjectId: number, imageId: number, opts?: Oazapfts.RequestOpts) {
+  return oazapfts.fetchJson<
+    | {
+        status: 200;
+        data: {};
+      }
+    | {
+        status: 500;
+        data: ErrorResponse;
+      }
+  >(
+    `/p1/wiki/subjects/${encodeURIComponent(subjectId)}/covers/${encodeURIComponent(imageId)}/vote`,
+    {
+      ...opts,
+      method: 'POST',
+    },
   );
 }
 /**
@@ -812,7 +924,7 @@ export async function patchSubjectInfo(
  *
  * 暂时只能修改沙盒条目 184017, 309445, 354667, 354677, 363612
  */
-export async function subjectEditHistorySummary(subjectId: number, opts?: Oazapfts.RequestOpts) {
+export function subjectEditHistorySummary(subjectId: number, opts?: Oazapfts.RequestOpts) {
   return oazapfts.fetchJson<
     | {
         status: 200;
@@ -820,11 +932,11 @@ export async function subjectEditHistorySummary(subjectId: number, opts?: Oazapf
       }
     | {
         status: 401;
-        data: Error;
+        data: ErrorResponse;
       }
     | {
         status: 500;
-        data: Error;
+        data: ErrorResponse;
       }
   >(`/p1/wiki/subjects/${encodeURIComponent(subjectId)}/history-summary`, {
     ...opts,

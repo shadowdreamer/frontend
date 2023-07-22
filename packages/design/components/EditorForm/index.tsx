@@ -42,14 +42,11 @@ const EditorForm = forwardRef<HTMLTextAreaElement, EditorFormProps>(
     },
     ref,
   ) => {
-    const classNames = classnames('bgm-editor__form', className);
-
     return (
-      <div className={classNames} style={style}>
+      <div className={classnames('bgm-editor__form', className)} style={style}>
         <Editor ref={ref} onConfirm={onConfirm} {...props} />
         <div className='bgm-editor__submit'>
           <Button
-            size='small'
             color='blue'
             className='bgm-editor__button bgm-editor__button--confirm'
             onClick={() => onConfirm?.(props.value ?? '')}
@@ -57,12 +54,14 @@ const EditorForm = forwardRef<HTMLTextAreaElement, EditorFormProps>(
             {confirmText}
           </Button>
           {!hideCancel && (
-            <Button type='text' size='small' className='bgm-editor__button' onClick={onCancel}>
+            <Button type='text' className='bgm-editor__button' onClick={onCancel}>
               {cancelText}
             </Button>
           )}
           <span className='bgm-editor__bbcode-tip'>
-            使用 Ctrl+Enter 或 Alt+S 快速提交 |{' '}
+            <span className='bgm-editor__bbcode-tip__left'>
+              使用 Ctrl+Enter 或 Alt+S 快速提交 |{' '}
+            </span>
             <Link isExternal to='https://bgm.tv/help/bbcode'>
               BBCode指南
             </Link>

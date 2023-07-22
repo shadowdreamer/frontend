@@ -2,26 +2,26 @@ import type { RenderResult } from '@testing-library/react';
 import { waitFor } from '@testing-library/react';
 import { rest } from 'msw';
 import React from 'react';
-import { useParams } from 'react-router-dom';
+import { Outlet, Route, Routes, useParams } from 'react-router-dom';
 
 import type { GroupMember, ResponseWithPagination } from '@bangumi/client/group';
 
 import { server as mockServer } from '../../../../../mocks/server';
 import { renderPage } from '../../../../../utils/test-utils';
-import GroupMembers from '../members';
+import GroupMembers from '../index/members';
 import Sandbox from './fixtures/sandbox.json';
 import sandboxMembers from './fixtures/sandbox-members.json';
 import sandboxModMember from './fixtures/sandbox-mod-member.json';
 
-jest.mock('react-router-dom', () => {
+vi.mock('react-router-dom', async () => {
   return {
     __esModule: true,
-    ...jest.requireActual('react-router-dom'),
-    useParams: jest.fn(),
+    ...(await vi.importActual<typeof import('react-router-dom')>('react-router-dom')),
+    useParams: vi.fn(),
   } as unknown;
 });
 
-const mockedUseParams = jest.mocked(useParams);
+const mockedUseParams = vi.mocked(useParams);
 
 class GroupMembersTest {
   page: RenderResult;
@@ -38,19 +38,25 @@ class GroupMembersTest {
     });
 
     mockServer.use(
-      rest.get(`http://localhost/p1/groups/${name}/profile`, (req, res, ctx) => {
+      rest.get(`http://localhost:3000/p1/groups/${name}/profile`, async (req, res, ctx) => {
         return res(ctx.status(200), ctx.json(Sandbox));
       }),
     );
 
     mockServer.use(
-      rest.get(`http://localhost/p1/groups/${name}/members`, (req, res, ctx) => {
+      rest.get(`http://localhost:3000/p1/groups/${name}/members`, async (req, res, ctx) => {
         const isAdmin = req.url.searchParams.get('type') === 'mod';
         return res(ctx.status(200), ctx.json(isAdmin ? mock.modMembers : mock.members));
       }),
     );
 
-    this.page = renderPage(<GroupMembers />);
+    this.page = renderPage(
+      <Routes>
+        <Route element={<Outlet context={{ groupRet: { group: Sandbox } }} />}>
+          <Route index element={<GroupMembers />} />
+        </Route>
+      </Routes>,
+    );
   }
 
   async assertMembersExist(expectMembers: string[]): Promise<void> {

@@ -15,10 +15,11 @@ export { ReactComponent as ArrowDown } from './assets/arrow-down.svg';
 export { ReactComponent as ArrowDownCircle } from './assets/arrow-down-circle.svg';
 export { ReactComponent as ArrowUpCircle } from './assets/arrow-up-circle.svg';
 export { ReactComponent as ArrowRightCircle } from './assets/arrow-right-circle.svg';
+export { ReactComponent as ArrowPath } from './assets/arrow-path.svg';
 export { ReactComponent as Plus } from './assets/plus.svg';
 export { ReactComponent as Minus } from './assets/minus.svg';
 export { ReactComponent as Cursor } from './assets/cursor.svg';
-
+export { ReactComponent as Error } from './assets/error.svg';
 // BBCode Editor
 
 export { ReactComponent as Bold } from './assets/bold.svg';
@@ -37,3 +38,6 @@ export { ReactComponent as TopicClosed } from './assets/topic-closed.svg';
 export { ReactComponent as TopicReopen } from './assets/topic-reopen.svg';
 export { ReactComponent as OpenQuote } from './assets/open-quote.svg';
 export { ReactComponent as CloseQuote } from './assets/close-quote.svg';
+export { ReactComponent as Enter } from './assets/enter.svg';
+export { ReactComponent as Comment } from './assets/comment.svg';
+export { ReactComponent as More } from './assets/more.svg';

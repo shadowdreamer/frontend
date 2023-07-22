@@ -42,7 +42,7 @@ describe('Normal Comment', () => {
 
   it.each([0, 6, 7])('should render %d', (state) => {
     const props = buildProps();
-    const { container } = render(<Comment {...props} state={state as any} />);
+    const { container } = render(<Comment {...props} state={state} />);
     expect(container).toMatchSnapshot();
   });
 
@@ -99,6 +99,16 @@ describe('Normal Comment', () => {
     expect(getByText('删除')).toBeInTheDocument();
   });
 
+  it('hide edit button if there are subreplies', () => {
+    const user = { ...mockedCurrentUser, id: 1 };
+    const props = buildProps(false, repliesComment, '233', 233, user);
+    const { container } = render(<Comment {...props} />);
+    // 选取主评论的操作区域
+    const actions = container.querySelector('.bgm-comment__box .bgm-comment-actions')?.textContent;
+    expect(actions?.includes('编辑')).toBeFalsy();
+    expect(actions?.includes('删除')).toBeTruthy();
+  });
+
   it('do not show opinions if not login', () => {
     const props = buildProps(false, singleComment, '233', 233, null as any);
     const { container } = render(<Comment {...props} />);
@@ -107,10 +117,10 @@ describe('Normal Comment', () => {
 
   it('click reply button should show editor form', () => {
     const props = buildProps(false);
-    const { getByText, container } = render(<Comment {...props} />);
+    const { getByText, container, getByTitle } = render(<Comment {...props} />);
     expect(container.getElementsByClassName('bgm-editor__form').length).toBe(0);
 
-    fireEvent.click(getByText('回复'));
+    fireEvent.click(getByTitle('回复'));
     expect(container.getElementsByClassName('bgm-editor__form').length).toBe(1);
 
     fireEvent.click(getByText('取消'));
@@ -119,20 +129,21 @@ describe('Normal Comment', () => {
 
   it('successful reply should refresh, highlight and hide form otherwise not', async () => {
     const basicReply = { id: 2104702 };
-    const mockApi = (status: number) =>
+    const mockApi = (status: number) => {
       mockServer.use(
-        rest.post('/p1/groups/-/topics/1/replies', (_, res, ctx) =>
+        rest.post('/p1/groups/-/topics/1/replies', async (_, res, ctx) =>
           res(ctx.status(status), ctx.json(basicReply)),
         ),
       );
+    };
 
-    const onSuccess = jest.fn();
+    const onSuccess = vi.fn();
     const props = buildProps(false);
-    const { getByText, container } = render(
-      <Comment {...props} onReplySuccess={onSuccess} topicId={1} />,
+    const { getByText, container, getByTitle } = render(
+      <Comment {...props} onCommentUpdate={onSuccess} topicId={1} />,
     );
     const fillAndSubmit = () => {
-      fireEvent.click(getByText('回复'));
+      fireEvent.click(getByTitle('回复'));
       fireEvent.change(container.querySelector('textarea')!, { target: { value: '233' } });
       fireEvent.click(getByText('写好了'));
     };

@@ -2,12 +2,13 @@ import { fireEvent, render, waitFor } from '@testing-library/react';
 import React from 'react';
 
 import Button from '../../Button';
+import EditorForm from '../../EditorForm';
 import Input from '../../Input';
 import Form from '..';
 
 describe('Form Components', () => {
   it('should submit when submit button clicked', async () => {
-    const handleSubmit = jest.fn();
+    const handleSubmit = vi.fn();
     const { findByTestId } = render(
       <Form
         onSubmit={(e) => {
@@ -28,7 +29,7 @@ describe('Form Components', () => {
   });
 
   it('key down should work properly', async () => {
-    const onKeyDown = jest.fn();
+    const onKeyDown = vi.fn();
     const { getByTestId } = render(
       <Form data-testid='form' onKeyDown={onKeyDown}>
         <Input id='input' data-testid='input' />
@@ -56,6 +57,17 @@ describe('Form Components', () => {
             <Input />
           </Input.Group>
         </Form.Item>
+      </Form>,
+    );
+    expect(container).toMatchSnapshot();
+  });
+
+  it('render compact layout properly', () => {
+    const { container } = render(
+      <Form compact>
+        <Input />
+        <Input />
+        <EditorForm />
       </Form>,
     );
     expect(container).toMatchSnapshot();

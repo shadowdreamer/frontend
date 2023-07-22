@@ -54,6 +54,24 @@ describe('Text Button', () => {
   });
 });
 
+it('should render button link', () => {
+  const { container } = render(
+    <Button.Link to='https://bgm.tv' isExternal>
+      Bangumi
+    </Button.Link>,
+  );
+  expect(container.firstChild).toMatchSnapshot();
+});
+
+it('should render plain button', () => {
+  const { container } = render(
+    <Button.Link to='https://bgm.tv' type='plain' isExternal>
+      Bangumi
+    </Button.Link>,
+  );
+  expect(container.firstChild).toMatchSnapshot();
+});
+
 it.each(['square', 'rounded'] as const)('should render button of shape %s', (shape) => {
   const { container } = render(
     <Button type='primary' shape={shape}>
@@ -64,7 +82,7 @@ it.each(['square', 'rounded'] as const)('should render button of shape %s', (sha
 });
 
 it('should trigger onClick callback', () => {
-  const onClick = jest.fn();
+  const onClick = vi.fn();
   const { getByText } = render(
     <Button type='primary' onClick={onClick}>
       hello world

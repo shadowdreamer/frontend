@@ -1,0 +1,196 @@
+pull_request_rules:
+  - name: Automatic merge on approval
+    conditions:
+      - '#approved-reviews-by>=2'
+      - 'created-at<=48:00 ago'
+      - -conflict
+      - base=master
+      - '#review-threads-unresolved=0'
+      - -title~=(?i)\[wip\]
+      - and: &ci
+          - -check-failure=lint
+          - -check-failure=build
+          - -check-failure=test
+          - -check-failure=test-e2e
+          - -check-failure=storybook-build
+    actions:
+      merge:
+        method: squash
+
+  - name: add label 'waiting-approval'
+    conditions:
+      - '#approved-reviews-by<2'
+      - -label=waiting-approval
+      - and: &basic-pr
+          - -conflict
+          - -draft
+          - base=master
+          - -title~=(?i)\[wip\]
+      - or:
+          - check-success=lint
+          - check-neutral=lint
+          - check-skipped=lint
+      - or:
+          - check-success=build
+          - check-neutral=build
+          - check-skipped=build
+      - or:
+          - check-success=test
+          - check-neutral=test
+          - check-skipped=test
+      - or:
+          - check-success=test-e2e
+          - check-neutral=test-e2e
+          - check-skipped=test-e2e
+      - or:
+          - check-success=storybook-build
+          - check-neutral=storybook-build
+          - check-skipped=storybook-build
+    actions:
+      label:
+        add:
+          - waiting-approval
+
+  - name: remove label 'waiting-approval'
+    conditions:
+      - and: *basic-pr
+      - label=waiting-approval
+      - or:
+          - check-failure=lint
+          - check-failure=build
+          - check-failure=test
+          - check-failure=test-e2e
+          - check-failure=storybook-build
+    actions:
+      label:
+        remove:
+          - waiting-approval
+
+  - name: label waiting 48h
+    conditions:
+      - '#approved-reviews-by>=2'
+      - '#changes-requested-reviews-by=0'
+      - 'created-at>48:00 ago'
+      - -conflict
+      - base=master
+      - -draft
+      - '#review-threads-unresolved=0'
+      - -title~=(?i)\[wip\]
+      - and: *ci
+    actions:
+      label:
+        toggle:
+          - waiting-opened-48h
+
+  - name: warn on conflicts
+    conditions:
+      - conflict
+    actions:
+      comment:
+        message: '@{{author}} this pull request is now in conflict 😩'
+      label:
+        add:
+          - conflict
+
+  - name: remove conflict label if not needed
+    conditions:
+      - -conflict
+    actions:
+      label:
+        remove:
+          - conflict
+
+  - name: add lint fail label
+    conditions:
+      - check-failure=lint
+    actions:
+      label:
+        add:
+          - 'ci:lint:fail'
+
+  - name: remove lint fail label
+    conditions:
+      - or:
+          - check-success=lint
+          - check-neutral=lint
+          - check-skipped=lint
+    actions:
+      label:
+        remove:
+          - 'ci:lint:fail'
+
+  - name: add test fail label
+    conditions:
+      - check-failure=test
+    actions:
+      label:
+        add:
+          - 'ci:test:fail'
+
+  - name: remove test fail label
+    conditions:
+      - or:
+          - check-success=test
+          - check-neutral=test
+          - check-skipped=test
+    actions:
+      label:
+        remove:
+          - 'ci:test:fail'
+
+  - name: add E2E test fail label
+    conditions:
+      - check-failure=test-e2e
+    actions:
+      label:
+        add:
+          - 'ci:test:e2e:fail'
+
+  - name: remove E2E test fail label
+    conditions:
+      - or:
+          - check-success=test-e2e
+          - check-neutral=test-e2e
+          - check-skipped=test-e2e
+    actions:
+      label:
+        remove:
+          - 'ci:test:e2e:fail'
+
+  - name: toggle labels based on build state
+    conditions:
+      - check-failure=build
+    actions:
+      label:
+        add:
+          - 'ci:build:fail'
+
+  - name: remove build fail label
+    conditions:
+      - or:
+          - check-success=build
+          - check-neutral=build
+          - check-skipped=build
+    actions:
+      label:
+        remove:
+          - 'ci:build:fail'
+
+  - name: add storybook build fail label
+    conditions:
+      - check-failure=storybook-build
+    actions:
+      label:
+        add:
+          - 'ci:storybook-build:fail'
+
+  - name: remove storybook build fail label
+    conditions:
+      - or:
+          - check-success=storybook-build
+          - check-neutral=storybook-build
+          - check-skipped=storybook-build
+    actions:
+      label:
+        remove:
+          - 'ci:storybook-build:fail'

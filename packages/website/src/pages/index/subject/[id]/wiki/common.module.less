@@ -19,37 +19,18 @@
 }
 
 .form {
+  width: 100%;
+
   &Input {
-    border-radius: 12px;
     flex: 1;
 
     > input {
       height: 1.5rem;
     }
 
-    &Btn {
-      border: 2px dashed @gray-10;
-      width: 100%;
-      height: 44px;
-      font-size: 1rem;
-      color: @gray-60;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 10px;
-
-      &Secondary {
-        background: #fcfcfc;
-      }
-    }
-
     &Group {
       display: flex;
       flex: 1;
-
-      &Secondary * {
-        background: #fcfcfc;
-      }
     }
   }
 
@@ -60,8 +41,6 @@
 
   &Select {
     width: 170px;
-    border-top-left-radius: 12px;
-    border-bottom-left-radius: 12px;
   }
 
   &TextArea {
@@ -82,7 +61,7 @@
     width: 120px;
   }
 
-  .Tips {
+  .tips {
     color: @gray-60;
     width: 100%;
     font-size: 0.75rem;
@@ -96,34 +75,6 @@
     flex: 1;
     gap: 10px;
     flex-direction: column;
-
-    &Item {
-      position: relative;
-      background-color: #fff;
-
-      &Minus {
-        display: none;
-        position: absolute;
-        right: 0;
-        top: 0;
-        cursor: pointer;
-        transform: translate(50%, -50%);
-      }
-
-      &:hover &Minus,
-      &:hover &Cursor {
-        display: block;
-      }
-
-      &Cursor {
-        display: none;
-        position: absolute;
-        left: 0;
-        top: 0;
-        cursor: move;
-        transform: translateY(20%);
-      }
-    }
   }
 }
 
@@ -162,21 +113,112 @@
   }
 
   &More {
-    display: flex;
     align-self: end;
-    gap: 0.25rem;
-    color: @gray-60;
-    font-size: 0.875rem;
-    line-height: 0.875rem;
-    font-weight: 600;
-    cursor: pointer;
+  }
+}
 
-    &:hover {
-      color: @blue-100;
+.editor-handbook {
+  margin-bottom: 40px;
+
+  &-content {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    color: @gray-80;
+    line-height: 22px;
+
+    > p {
+      padding-bottom: 12px;
+      border-bottom: 1px dashed @gray-10;
     }
   }
 }
 
-.draggableBox {
-  margin-bottom: 0.625rem;
+.upload-img {
+  margin-bottom: 40px;
+
+  > .divider {
+    margin-bottom: 20px;
+  }
+
+  &-cover-selected,
+  &-cover-uploaded {
+    display: flex;
+    flex-wrap: wrap;
+    margin-bottom: 20px;
+
+    img {
+      object-fit: contain;
+      max-width: 136px;
+      max-height: 300px;
+    }
+  }
+
+  &-cover-item {
+    margin-right: 16px;
+    margin-bottom: 20px;
+    max-width: 136px;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+
+    &-img {
+      flex: auto;
+      display: flex;
+      align-items: center;
+    }
+
+    &-info {
+      margin-block: 10px;
+
+      > span {
+        margin-right: 10px;
+        vertical-align: top;
+        color: @gray-80;
+      }
+
+      > a {
+        width: 100px;
+        overflow-wrap: break-word;
+      }
+    }
+  }
+
+  &-bottom {
+    display: flex;
+    align-items: center;
+    margin-block: 20px;
+
+    > label {
+      flex: 120px 0 0;
+      height: 38px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-size: 14px;
+      font-weight: 600;
+      color: @gray-80;
+      background-color: @gray-10;
+      border-radius: 19px;
+      cursor: pointer;
+    }
+
+    > span {
+      font-size: 0.875rem;
+      font-weight: 400;
+      color: @gray-60;
+      margin-inline: 20px;
+    }
+
+    > input[type='file'] {
+      width: 1px;
+      height: 1px;
+      opacity: 0;
+    }
+  }
+
+  &-btn {
+    width: 120px;
+    height: 38px;
+  }
 }

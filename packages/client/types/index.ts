@@ -4,54 +4,6 @@
  */
 
 export interface paths {
-  '/p1/logout': {
-    /** @description 登出 */
-    post: operations['logout'];
-  };
-  '/p1/login2': {
-    /**
-     * @description 需要 [turnstile](https://developers.cloudflare.com/turnstile/get-started/client-side-rendering/)
-     *
-     * next.bgm.tv 域名对应的 site-key 为 `0x4AAAAAAABkMYinukE8nzYS`
-     *
-     * dev.bgm38.com 域名使用测试用的 site-key `1x00000000000000000000AA`
-     */
-    post: operations['login2'];
-  };
-  '/p1/me': {
-    get: operations['getCurrentUser'];
-  };
-  '/p1/groups/{groupName}/profile': {
-    /** @description 获取小组首页 */
-    get: operations['getGroupProfile'];
-  };
-  '/p1/groups/-/topics/{id}': {
-    /** @description 获取帖子列表 */
-    get: operations['getGroupTopicDetail'];
-  };
-  '/p1/groups/{groupName}/members': {
-    /** @description 获取帖子列表 */
-    get: operations['listGroupMembersByName'];
-  };
-  '/p1/groups/{groupName}/topics': {
-    /** @description 获取帖子列表 */
-    get: operations['getGroupTopicsByGroupName'];
-    post: operations['createNewGroupTopic'];
-  };
-  '/p1/subjects/{subjectID}/topics': {
-    /** @description 获取帖子列表 */
-    get: operations['getSubjectTopicsBySubjectId'];
-  };
-  '/p1/groups/-/topics/{topicID}/replies': {
-    post: operations['createGroupReply'];
-  };
-  '/p1/groups/-/posts/{postID}': {
-    put: operations['editReply'];
-  };
-  '/p1/notify': {
-    /** 获取未读通知 */
-    get: operations['listNotice'];
-  };
   '/p1/clear-notify': {
     /**
      * 标记通知为已读
@@ -61,15 +13,58 @@ export interface paths {
      */
     post: operations['clearNotice'];
   };
-  '/p1/wiki/subjects/{subjectID}/covers': {
-    get: operations['listSubjectCovers'];
-    post: operations['uploadSubjectCover'];
+  '/p1/groups/-/posts/{postID}': {
+    get: operations['getGroupPost'];
+    put: operations['editGroupPost'];
+    delete: operations['deleteGroupPost'];
   };
-  '/p1/wiki/subjects/{subjectID}/covers/{imageID}/vote': {
-    /** 为条目封面投票 */
-    post: operations['voteSubjectCover'];
-    /** 撤消条目封面投票 */
-    delete: operations['unvoteSubjectCover'];
+  '/p1/groups/-/topics/{id}': {
+    /** @description 获取帖子列表 */
+    get: operations['getGroupTopicDetail'];
+  };
+  '/p1/groups/-/topics/{topicID}': {
+    put: operations['editGroupTopic'];
+  };
+  '/p1/groups/-/topics/{topicID}/replies': {
+    post: operations['createGroupReply'];
+  };
+  '/p1/groups/{groupName}/members': {
+    /** @description 获取帖子列表 */
+    get: operations['listGroupMembersByName'];
+  };
+  '/p1/groups/{groupName}/profile': {
+    /** @description 获取小组首页 */
+    get: operations['getGroupProfile'];
+  };
+  '/p1/groups/{groupName}/topics': {
+    /** @description 获取帖子列表 */
+    get: operations['getGroupTopicsByGroupName'];
+    post: operations['createNewGroupTopic'];
+  };
+  '/p1/login': {
+    /**
+     * @description 需要 [turnstile](https://developers.cloudflare.com/turnstile/get-started/client-side-rendering/)
+     *
+     * next.bgm.tv 域名对应的 site-key 为 `0x4AAAAAAABkMYinukE8nzYS`
+     *
+     * dev.bgm38.com 域名使用测试用的 site-key `1x00000000000000000000AA`
+     */
+    post: operations['login'];
+  };
+  '/p1/logout': {
+    /** @description 登出 */
+    post: operations['logout'];
+  };
+  '/p1/me': {
+    get: operations['getCurrentUser'];
+  };
+  '/p1/notify': {
+    /** 获取未读通知 */
+    get: operations['listNotice'];
+  };
+  '/p1/subjects/{subjectID}/topics': {
+    /** @description 获取帖子列表 */
+    get: operations['getSubjectTopicsBySubjectId'];
   };
   '/p1/wiki/subjects/{subjectID}': {
     /**
@@ -78,10 +73,31 @@ export interface paths {
      * 暂时只能修改沙盒条目 184017, 309445, 354667, 354677, 363612
      */
     get: operations['subjectInfo'];
-    /** @description 暂时只能修改沙盒条目 184017,309445,354667,354677,363612 */
+    /**
+     * @description 暂时只能修改沙盒条目 184017,309445,354667,354677,363612
+     *
+     * 需要 `subjectWikiEdit` 权限
+     */
     put: operations['putSubjectInfo'];
     /** @description 暂时只能修改沙盒条目 184017,309445,354667,354677,363612 */
     patch: operations['patchSubjectInfo'];
+  };
+  '/p1/wiki/subjects/{subjectID}/covers': {
+    get: operations['listSubjectCovers'];
+    /** @description 需要 `subjectWikiEdit` 权限 */
+    post: operations['uploadSubjectCover'];
+  };
+  '/p1/wiki/subjects/{subjectID}/covers/{imageID}/vote': {
+    /**
+     * 为条目封面投票
+     * @description 需要 `subjectWikiEdit` 权限
+     */
+    post: operations['voteSubjectCover'];
+    /**
+     * 撤消条目封面投票
+     * @description 需要 `subjectWikiEdit` 权限
+     */
+    delete: operations['unvoteSubjectCover'];
   };
   '/p1/wiki/subjects/{subjectID}/history-summary': {
     /**
@@ -97,188 +113,230 @@ export type webhooks = Record<string, never>;
 
 export interface components {
   schemas: {
-    /** User */
-    User: {
-      id: number;
-      username: string;
-      nickname: string;
-      /** Avatar */
-      avatar: {
-        small: string;
-        medium: string;
-        large: string;
-      };
-      sign: string;
-      user_group: number;
-    };
     /** Avatar */
     Avatar: {
-      small: string;
-      medium: string;
       large: string;
+      medium: string;
+      small: string;
     };
-    /** @description fastify default error response */
-    Error: {
+    BasicReply: {
+      createdAt: number;
+      creator: components['schemas']['User'];
+      id: number;
+      state: number;
+      text: string;
+    };
+    CurrentUser: {
+      /** Avatar */
+      avatar: {
+        large: string;
+        medium: string;
+        small: string;
+      };
+      id: number;
+      nickname: string;
+      sign: string;
+      user_group: number;
+      username: string;
+    } & {
+      permission: {
+        subjectWikiEdit: boolean;
+      };
+    };
+    /** @description default error response type */
+    ErrorResponse: {
       code: string;
       error: string;
       message: string;
       statusCode: number;
     };
-    /** @description request data validation error */
-    ValidationError: {
-      error: string;
-      message: string;
-      statusCode: number;
-    };
-    /** Topic */
-    Topic: {
-      /** @description topic id */
-      id: number;
-      /** User */
-      creator: {
-        id: number;
-        username: string;
-        nickname: string;
-        /** Avatar */
-        avatar: {
-          small: string;
-          medium: string;
-          large: string;
-        };
-        sign: string;
-        user_group: number;
-      };
-      title: string;
-      /** @description 小组/条目ID */
-      parentID: number;
-      /** @description 发帖时间，unix time stamp in seconds */
-      createdAt: number;
-      /** @description 最后回复时间，unix time stamp in seconds */
-      updatedAt: number;
-      repliesCount: number;
-    };
     Group: {
+      createdAt: number;
+      description: string;
+      icon: string;
       id: number;
       name: string;
       nsfw: boolean;
       title: string;
-      icon: string;
-      description: string;
       totalMembers: number;
-      createdAt: number;
-    };
-    GroupProfile: {
-      recentAddedMembers: components['schemas']['GroupMember'][];
-      topics: components['schemas']['Topic'][];
-      /** @description 是否已经加入小组 */
-      inGroup: boolean;
-      group: components['schemas']['Group'];
-      totalTopics: number;
-    };
-    SubReply: {
-      id: number;
-      creator: components['schemas']['User'];
-      createdAt: number;
-      isFriend: boolean;
-      text: string;
-      state: number;
-    };
-    BasicReply: {
-      id: number;
-      creator: components['schemas']['User'];
-      createdAt: number;
-      text: string;
-      state: number;
-    };
-    Reply: {
-      id: number;
-      isFriend: boolean;
-      replies: components['schemas']['SubReply'][];
-      creator: components['schemas']['User'];
-      createdAt: number;
-      text: string;
-      state: number;
-    };
-    TopicDetail: {
-      id: number;
-      group: components['schemas']['Group'];
-      creator: components['schemas']['User'];
-      title: string;
-      text: string;
-      state: number;
-      createdAt: number;
-      replies: components['schemas']['Reply'][];
     };
     GroupMember: {
       /** Avatar */
       avatar: {
-        small: string;
-        medium: string;
         large: string;
+        medium: string;
+        small: string;
       };
       id: number;
+      joinedAt: number;
       nickname: string;
       username: string;
-      joinedAt: number;
     };
-    Notice: {
-      id: number;
-      title: string;
-      /** @description 查看 `./lib/notify.ts` _settings */
-      type: number;
-      /** User */
-      sender: {
-        id: number;
-        username: string;
-        nickname: string;
-        /** Avatar */
-        avatar: {
-          small: string;
-          medium: string;
-          large: string;
-        };
-        sign: string;
-        user_group: number;
-      };
-      topicID: number;
-      postID: number;
-      /** @description unix timestamp in seconds */
+    GroupProfile: {
+      group: components['schemas']['Group'];
+      /** @description 是否已经加入小组 */
+      inGroup: boolean;
+      recentAddedMembers: components['schemas']['GroupMember'][];
+      topics: components['schemas']['Topic'][];
+      totalTopics: number;
+    };
+    GroupReply: {
       createdAt: number;
-    };
-    SubjectEdit: {
-      name: string;
-      infobox: string;
-      platform: number;
-      nsfw: boolean;
-      date?: string;
-      summary: string;
-    };
-    WikiPlatform: {
+      creator: components['schemas']['User'];
       id: number;
+      state: number;
       text: string;
-      wiki_tpl?: string;
-    };
-    /** SubjectType */
-    SubjectType: 1 | 2 | 3 | 4 | 6;
-    SubjectWikiInfo: {
-      id: number;
-      name: string;
-      typeID: components['schemas']['SubjectType'];
-      infobox: string;
-      platform: number;
-      availablePlatform: components['schemas']['WikiPlatform'][];
-      summary: string;
-      nsfw: boolean;
+      topicID: number;
+      topicTitle: string;
     };
     HistorySummary: {
+      commitMessage: string;
+      /** @description unix timestamp seconds */
+      createdAt: number;
       creator: {
         username: string;
       };
       /** @description 修改类型。`1` 正常修改， `11` 合并，`103` 锁定/解锁 `104` 未知 */
       type: number;
-      commitMessage: string;
-      /** @description unix timestamp seconds */
+    };
+    LoginRequestBody: {
+      'cf-turnstile-response': string;
+      email: string;
+      password: string;
+    };
+    Notice: {
+      /** @description unix timestamp in seconds */
       createdAt: number;
+      id: number;
+      postID: number;
+      /** User */
+      sender: {
+        /** Avatar */
+        avatar: {
+          large: string;
+          medium: string;
+          small: string;
+        };
+        id: number;
+        nickname: string;
+        sign: string;
+        user_group: number;
+        username: string;
+      };
+      title: string;
+      topicID: number;
+      /** @description 查看 `./lib/notify.ts` _settings */
+      type: number;
+      unread: boolean;
+    };
+    Permission: {
+      subjectWikiEdit: boolean;
+    };
+    Reaction: {
+      selected: boolean;
+      total: number;
+      value: number;
+    };
+    Reply: {
+      createdAt: number;
+      creator: components['schemas']['User'];
+      id: number;
+      isFriend: boolean;
+      reactions: components['schemas']['Reaction'][];
+      replies: components['schemas']['SubReply'][];
+      state: number;
+      text: string;
+    };
+    SubReply: {
+      createdAt: number;
+      creator: components['schemas']['User'];
+      id: number;
+      isFriend: boolean;
+      reactions: components['schemas']['Reaction'][];
+      state: number;
+      text: string;
+    };
+    SubjectEdit: {
+      date?: string;
+      infobox: string;
+      name: string;
+      nsfw: boolean;
+      platform: number;
+      summary: string;
+    };
+    /** SubjectType */
+    SubjectType: 1 | 2 | 3 | 4 | 6;
+    SubjectWikiInfo: {
+      availablePlatform: components['schemas']['WikiPlatform'][];
+      id: number;
+      infobox: string;
+      name: string;
+      nsfw: boolean;
+      platform: number;
+      summary: string;
+      typeID: components['schemas']['SubjectType'];
+    };
+    /** Topic */
+    Topic: {
+      /** @description 发帖时间，unix time stamp in seconds */
+      createdAt: number;
+      /** User */
+      creator: {
+        /** Avatar */
+        avatar: {
+          large: string;
+          medium: string;
+          small: string;
+        };
+        id: number;
+        nickname: string;
+        sign: string;
+        user_group: number;
+        username: string;
+      };
+      /** @description topic id */
+      id: number;
+      /** @description 小组/条目ID */
+      parentID: number;
+      repliesCount: number;
+      title: string;
+      /** @description 最后回复时间，unix time stamp in seconds */
+      updatedAt: number;
+    };
+    TopicCreation: {
+      /** @description bbcode */
+      text: string;
+      title: string;
+    };
+    TopicDetail: {
+      createdAt: number;
+      creator: components['schemas']['User'];
+      group: components['schemas']['Group'];
+      id: number;
+      reactions: components['schemas']['Reaction'][];
+      replies: components['schemas']['Reply'][];
+      state: number;
+      text: string;
+      title: string;
+    };
+    /** User */
+    User: {
+      /** Avatar */
+      avatar: {
+        large: string;
+        medium: string;
+        small: string;
+      };
+      id: number;
+      nickname: string;
+      sign: string;
+      user_group: number;
+      username: string;
+    };
+    WikiPlatform: {
+      id: number;
+      text: string;
+      wiki_tpl?: string;
     };
   };
   responses: never;
@@ -291,383 +349,69 @@ export interface components {
 export type external = Record<string, never>;
 
 export interface operations {
-  logout: {
-    /** @description 登出 */
+  /**
+   * 标记通知为已读
+   * @description 标记通知为已读
+   *
+   * 不传id时会清空所有未读通知
+   */
+  clearNotice: {
     requestBody?: {
       content: {
-        'application/json': Record<string, never>;
+        'application/json': {
+          id?: number[];
+        };
       };
     };
     responses: {
-      /** @description Default Response */
-      200: {
-        content: {
-          'application/json': Record<string, never>;
-        };
-      };
+      /** @description 没有返回值 */
+      200: never;
       /** @description 未登录 */
       401: {
         content: {
-          'application/json': components['schemas']['Error'];
+          'application/json': components['schemas']['ErrorResponse'];
         };
       };
       /** @description 意料之外的服务器错误 */
       500: {
         content: {
-          'application/json': components['schemas']['Error'];
+          'application/json': components['schemas']['ErrorResponse'];
         };
       };
     };
   };
-  login2: {
-    /**
-     * @description 需要 [turnstile](https://developers.cloudflare.com/turnstile/get-started/client-side-rendering/)
-     *
-     * next.bgm.tv 域名对应的 site-key 为 `0x4AAAAAAABkMYinukE8nzYS`
-     *
-     * dev.bgm38.com 域名使用测试用的 site-key `1x00000000000000000000AA`
-     */
-    requestBody: {
-      content: {
-        /**
-         * @example {
-         *   "email": "treeholechan@gmail.com",
-         *   "password": "lovemeplease",
-         *   "cf-turnstile-response": "10000000-aaaa-bbbb-cccc-000000000001"
-         * }
-         */
-        'application/json': {
-          email: string;
-          password: string;
-          'cf-turnstile-response': string;
-        };
-      };
-    };
-    responses: {
-      /** @description Default Response */
-      200: {
-        headers: {
-          /** @description example: "chiiNextSessionID=12345abc" */
-          'Set-Cookie'?: string;
-        };
-        content: {
-          'application/json': components['schemas']['User'];
-        };
-      };
-      /** @description Default Response */
-      400: {
-        content: {
-          'application/json': components['schemas']['ValidationError'];
-        };
-      };
-      /** @description 验证码错误/账号密码不匹配 */
-      401: {
-        headers: {
-          /** @description remaining rate limit */
-          'X-RateLimit-Remaining'?: number;
-          /** @description total limit per 10 minutes */
-          'X-RateLimit-Limit'?: number;
-          /** @description seconds to reset rate limit */
-          'X-RateLimit-Reset'?: number;
-        };
-        content: {
-          'application/json': components['schemas']['Error'];
-        };
-      };
-      /** @description 失败次数太多，需要过一段时间再重试 */
-      429: {
-        headers: {
-          /** @description remaining rate limit */
-          'X-RateLimit-Remaining'?: number;
-          /** @description limit per 10 minutes */
-          'X-RateLimit-Limit'?: number;
-          /** @description seconds to reset rate limit */
-          'X-RateLimit-Reset'?: number;
-        };
-        content: {
-          'application/json': components['schemas']['Error'];
-        };
-      };
-      /** @description 意料之外的服务器错误 */
-      500: {
-        content: {
-          'application/json': components['schemas']['Error'];
-        };
-      };
-    };
-  };
-  getCurrentUser: {
-    responses: {
-      /** @description Default Response */
-      200: {
-        content: {
-          'application/json': components['schemas']['User'];
-        };
-      };
-      /** @description Default Response */
-      401: {
-        content: {
-          'application/json': components['schemas']['Error'];
-        };
-      };
-      /** @description 意料之外的服务器错误 */
-      500: {
-        content: {
-          'application/json': components['schemas']['Error'];
-        };
-      };
-    };
-  };
-  getGroupProfile: {
-    /** @description 获取小组首页 */
+  getGroupPost: {
     parameters: {
-      query?: {
-        limit?: number;
-        offset?: number;
-      };
       path: {
-        groupName: string;
+        /** @example 2092074 */
+        postID: number;
       };
     };
     responses: {
       /** @description Default Response */
       200: {
         content: {
-          'application/json': components['schemas']['GroupProfile'];
+          'application/json': components['schemas']['GroupReply'];
         };
       };
-      /** @description 小组不存在 */
+      /** @description Default Response */
       404: {
         content: {
-          'application/json': components['schemas']['Error'];
+          'application/json': components['schemas']['ErrorResponse'];
         };
       };
       /** @description 意料之外的服务器错误 */
       500: {
         content: {
-          'application/json': components['schemas']['Error'];
+          'application/json': components['schemas']['ErrorResponse'];
         };
       };
     };
   };
-  getGroupTopicDetail: {
-    /** @description 获取帖子列表 */
+  editGroupPost: {
     parameters: {
-      /** @example 371602 */
       path: {
-        id: number;
-      };
-    };
-    responses: {
-      /** @description Default Response */
-      200: {
-        content: {
-          'application/json': components['schemas']['TopicDetail'];
-        };
-      };
-      /** @description 小组不存在 */
-      404: {
-        content: {
-          'application/json': components['schemas']['Error'];
-        };
-      };
-      /** @description 意料之外的服务器错误 */
-      500: {
-        content: {
-          'application/json': components['schemas']['Error'];
-        };
-      };
-    };
-  };
-  listGroupMembersByName: {
-    /** @description 获取帖子列表 */
-    parameters: {
-      query?: {
-        type?: 'mod' | 'normal' | 'all';
-        limit?: number;
-        offset?: number;
-      };
-      path: {
-        groupName: string;
-      };
-    };
-    responses: {
-      /** @description Default Response */
-      200: {
-        content: {
-          'application/json': {
-            data: components['schemas']['GroupMember'][];
-            total: number;
-          };
-        };
-      };
-      /** @description 小组不存在 */
-      404: {
-        content: {
-          'application/json': components['schemas']['Error'];
-        };
-      };
-      /** @description 意料之外的服务器错误 */
-      500: {
-        content: {
-          'application/json': components['schemas']['Error'];
-        };
-      };
-    };
-  };
-  getGroupTopicsByGroupName: {
-    /** @description 获取帖子列表 */
-    parameters: {
-      query?: {
-        limit?: number;
-        offset?: number;
-      };
-      path: {
-        groupName: string;
-      };
-    };
-    responses: {
-      /** @description Default Response */
-      200: {
-        content: {
-          'application/json': {
-            data: components['schemas']['Topic'][];
-            total: number;
-          };
-        };
-      };
-      /** @description 小组不存在 */
-      404: {
-        content: {
-          'application/json': components['schemas']['Error'];
-        };
-      };
-      /** @description 意料之外的服务器错误 */
-      500: {
-        content: {
-          'application/json': components['schemas']['Error'];
-        };
-      };
-    };
-  };
-  createNewGroupTopic: {
-    parameters: {
-      /** @example sandbox */
-      path: {
-        groupName: string;
-      };
-    };
-    requestBody: {
-      content: {
-        /**
-         * @example {
-         *   "title": "post title",
-         *   "content": "post contents"
-         * }
-         */
-        'application/json': {
-          title: string;
-          content: string;
-        };
-      };
-    };
-    responses: {
-      /** @description Default Response */
-      200: {
-        content: {
-          'application/json': {
-            /** @description new post topic id */
-            id: number;
-          };
-        };
-      };
-      /** @description 意料之外的服务器错误 */
-      500: {
-        content: {
-          'application/json': components['schemas']['Error'];
-        };
-      };
-    };
-  };
-  getSubjectTopicsBySubjectId: {
-    /** @description 获取帖子列表 */
-    parameters: {
-      query?: {
-        limit?: number;
-        offset?: number;
-      };
-      path: {
-        subjectID: number;
-      };
-    };
-    responses: {
-      /** @description Default Response */
-      200: {
-        content: {
-          'application/json': {
-            data: components['schemas']['Topic'][];
-            total: number;
-          };
-        };
-      };
-      /** @description 条目不存在 */
-      404: {
-        content: {
-          'application/json': components['schemas']['Error'];
-        };
-      };
-      /** @description 意料之外的服务器错误 */
-      500: {
-        content: {
-          'application/json': components['schemas']['Error'];
-        };
-      };
-    };
-  };
-  createGroupReply: {
-    parameters: {
-      /** @example 371602 */
-      path: {
-        topicID: number;
-      };
-    };
-    requestBody: {
-      content: {
-        'application/json': {
-          /**
-           * @description 被回复的 topic ID, `0` 代表回复楼主
-           * @default 0
-           */
-          replyTo?: number;
-          content: string;
-        };
-      };
-    };
-    responses: {
-      /** @description Default Response */
-      200: {
-        content: {
-          'application/json': components['schemas']['BasicReply'];
-        };
-      };
-      /** @description Default Response */
-      401: {
-        content: {
-          'application/json': components['schemas']['Error'];
-        };
-      };
-      /** @description 意料之外的服务器错误 */
-      500: {
-        content: {
-          'application/json': components['schemas']['Error'];
-        };
-      };
-    };
-  };
-  editReply: {
-    parameters: {
-      /** @example 2092074 */
-      path: {
+        /** @example 2092074 */
         postID: number;
       };
     };
@@ -693,22 +437,415 @@ export interface operations {
       /** @description Default Response */
       401: {
         content: {
-          'application/json': components['schemas']['Error'];
+          'application/json': components['schemas']['ErrorResponse'];
         };
       };
       /** @description 意料之外的服务器错误 */
       500: {
         content: {
-          'application/json': components['schemas']['Error'];
+          'application/json': components['schemas']['ErrorResponse'];
         };
       };
     };
   };
-  listNotice: {
-    /** 获取未读通知 */
-    parameters?: {
+  deleteGroupPost: {
+    parameters: {
+      path: {
+        /** @example 2092074 */
+        postID: number;
+      };
+    };
+    responses: {
+      /** @description Default Response */
+      200: {
+        content: {
+          'application/json': Record<string, never>;
+        };
+      };
+      /** @description Default Response */
+      401: {
+        content: {
+          'application/json': components['schemas']['ErrorResponse'];
+        };
+      };
+      /** @description Default Response */
+      404: {
+        content: {
+          'application/json': components['schemas']['ErrorResponse'];
+        };
+      };
+      /** @description 意料之外的服务器错误 */
+      500: {
+        content: {
+          'application/json': components['schemas']['ErrorResponse'];
+        };
+      };
+    };
+  };
+  /** @description 获取帖子列表 */
+  getGroupTopicDetail: {
+    parameters: {
+      path: {
+        /** @example 371602 */
+        id: number;
+      };
+    };
+    responses: {
+      /** @description Default Response */
+      200: {
+        content: {
+          'application/json': components['schemas']['TopicDetail'];
+        };
+      };
+      /** @description 小组不存在 */
+      404: {
+        content: {
+          'application/json': components['schemas']['ErrorResponse'];
+        };
+      };
+      /** @description 意料之外的服务器错误 */
+      500: {
+        content: {
+          'application/json': components['schemas']['ErrorResponse'];
+        };
+      };
+    };
+  };
+  editGroupTopic: {
+    parameters: {
+      path: {
+        /** @example 371602 */
+        topicID: number;
+      };
+    };
+    requestBody?: {
+      content: {
+        'application/json': components['schemas']['TopicCreation'];
+      };
+    };
+    responses: {
+      /** @description Default Response */
+      200: {
+        content: {
+          'application/json': Record<string, never>;
+        };
+      };
+      /** @description Default Response */
+      400: {
+        content: {
+          'application/json': components['schemas']['ErrorResponse'];
+        };
+      };
+      /** @description Default Response */
+      401: {
+        content: {
+          'application/json': components['schemas']['ErrorResponse'];
+        };
+      };
+      /** @description 意料之外的服务器错误 */
+      500: {
+        content: {
+          'application/json': components['schemas']['ErrorResponse'];
+        };
+      };
+    };
+  };
+  createGroupReply: {
+    parameters: {
+      path: {
+        /** @example 371602 */
+        topicID: number;
+      };
+    };
+    requestBody: {
+      content: {
+        'application/json': {
+          content: string;
+          /**
+           * @description 被回复的 topic ID, `0` 代表回复楼主
+           * @default 0
+           */
+          replyTo?: number;
+        };
+      };
+    };
+    responses: {
+      /** @description Default Response */
+      200: {
+        content: {
+          'application/json': components['schemas']['BasicReply'];
+        };
+      };
+      /** @description Default Response */
+      401: {
+        content: {
+          'application/json': components['schemas']['ErrorResponse'];
+        };
+      };
+      /** @description 意料之外的服务器错误 */
+      500: {
+        content: {
+          'application/json': components['schemas']['ErrorResponse'];
+        };
+      };
+    };
+  };
+  /** @description 获取帖子列表 */
+  listGroupMembersByName: {
+    parameters: {
+      query?: {
+        type?: 'mod' | 'normal' | 'all';
+        limit?: number;
+        offset?: number;
+      };
+      path: {
+        groupName: string;
+      };
+    };
+    responses: {
+      /** @description Default Response */
+      200: {
+        content: {
+          'application/json': {
+            data: components['schemas']['GroupMember'][];
+            total: number;
+          };
+        };
+      };
+      /** @description 小组不存在 */
+      404: {
+        content: {
+          'application/json': components['schemas']['ErrorResponse'];
+        };
+      };
+      /** @description 意料之外的服务器错误 */
+      500: {
+        content: {
+          'application/json': components['schemas']['ErrorResponse'];
+        };
+      };
+    };
+  };
+  /** @description 获取小组首页 */
+  getGroupProfile: {
+    parameters: {
       query?: {
         limit?: number;
+        offset?: number;
+      };
+      path: {
+        groupName: string;
+      };
+    };
+    responses: {
+      /** @description Default Response */
+      200: {
+        content: {
+          'application/json': components['schemas']['GroupProfile'];
+        };
+      };
+      /** @description 小组不存在 */
+      404: {
+        content: {
+          'application/json': components['schemas']['ErrorResponse'];
+        };
+      };
+      /** @description 意料之外的服务器错误 */
+      500: {
+        content: {
+          'application/json': components['schemas']['ErrorResponse'];
+        };
+      };
+    };
+  };
+  /** @description 获取帖子列表 */
+  getGroupTopicsByGroupName: {
+    parameters: {
+      query?: {
+        limit?: number;
+        offset?: number;
+      };
+      path: {
+        groupName: string;
+      };
+    };
+    responses: {
+      /** @description Default Response */
+      200: {
+        content: {
+          'application/json': {
+            data: components['schemas']['Topic'][];
+            total: number;
+          };
+        };
+      };
+      /** @description 小组不存在 */
+      404: {
+        content: {
+          'application/json': components['schemas']['ErrorResponse'];
+        };
+      };
+      /** @description 意料之外的服务器错误 */
+      500: {
+        content: {
+          'application/json': components['schemas']['ErrorResponse'];
+        };
+      };
+    };
+  };
+  createNewGroupTopic: {
+    parameters: {
+      path: {
+        /** @example sandbox */
+        groupName: string;
+      };
+    };
+    requestBody?: {
+      content: {
+        'application/json': components['schemas']['TopicCreation'];
+      };
+    };
+    responses: {
+      /** @description Default Response */
+      200: {
+        content: {
+          'application/json': {
+            /** @description new topic id */
+            id: number;
+          };
+        };
+      };
+      /** @description 意料之外的服务器错误 */
+      500: {
+        content: {
+          'application/json': components['schemas']['ErrorResponse'];
+        };
+      };
+    };
+  };
+  /**
+   * @description 需要 [turnstile](https://developers.cloudflare.com/turnstile/get-started/client-side-rendering/)
+   *
+   * next.bgm.tv 域名对应的 site-key 为 `0x4AAAAAAABkMYinukE8nzYS`
+   *
+   * dev.bgm38.com 域名使用测试用的 site-key `1x00000000000000000000AA`
+   */
+  login: {
+    requestBody?: {
+      content: {
+        'application/json': components['schemas']['LoginRequestBody'];
+      };
+    };
+    responses: {
+      /** @description Default Response */
+      200: {
+        headers: {
+          /** @description example: "chiiNextSessionID=12345abc" */
+          'Set-Cookie'?: string;
+        };
+        content: {
+          'application/json': components['schemas']['User'];
+        };
+      };
+      /** @description request validation error */
+      400: {
+        content: {
+          'application/json': components['schemas']['ErrorResponse'];
+        };
+      };
+      /** @description 验证码错误/账号密码不匹配 */
+      401: {
+        headers: {
+          /** @description total limit per 10 minutes */
+          'X-RateLimit-Limit'?: number;
+          /** @description remaining rate limit */
+          'X-RateLimit-Remaining'?: number;
+          /** @description seconds to reset rate limit */
+          'X-RateLimit-Reset'?: number;
+        };
+        content: {
+          'application/json': components['schemas']['ErrorResponse'];
+        };
+      };
+      /** @description 失败次数太多，需要过一段时间再重试 */
+      429: {
+        headers: {
+          /** @description limit per 10 minutes */
+          'X-RateLimit-Limit'?: number;
+          /** @description remaining rate limit */
+          'X-RateLimit-Remaining'?: number;
+          /** @description seconds to reset rate limit */
+          'X-RateLimit-Reset'?: number;
+        };
+        content: {
+          'application/json': components['schemas']['ErrorResponse'];
+        };
+      };
+      /** @description 意料之外的服务器错误 */
+      500: {
+        content: {
+          'application/json': components['schemas']['ErrorResponse'];
+        };
+      };
+    };
+  };
+  /** @description 登出 */
+  logout: {
+    requestBody?: {
+      content: {
+        'application/json': Record<string, never>;
+      };
+    };
+    responses: {
+      /** @description Default Response */
+      200: {
+        content: {
+          'application/json': Record<string, never>;
+        };
+      };
+      /** @description 未登录 */
+      401: {
+        content: {
+          'application/json': components['schemas']['ErrorResponse'];
+        };
+      };
+      /** @description 意料之外的服务器错误 */
+      500: {
+        content: {
+          'application/json': components['schemas']['ErrorResponse'];
+        };
+      };
+    };
+  };
+  getCurrentUser: {
+    responses: {
+      /** @description Default Response */
+      200: {
+        content: {
+          'application/json': components['schemas']['CurrentUser'];
+        };
+      };
+      /** @description Default Response */
+      401: {
+        content: {
+          'application/json': components['schemas']['ErrorResponse'];
+        };
+      };
+      /** @description 意料之外的服务器错误 */
+      500: {
+        content: {
+          'application/json': components['schemas']['ErrorResponse'];
+        };
+      };
+    };
+  };
+  /** 获取未读通知 */
+  listNotice: {
+    parameters: {
+      query?: {
+        /** @description max 40 */
+        limit?: number;
+        unread?: boolean;
       };
     };
     responses: {
@@ -724,51 +861,24 @@ export interface operations {
       /** @description 未登录 */
       401: {
         content: {
-          'application/json': components['schemas']['Error'];
+          'application/json': components['schemas']['ErrorResponse'];
         };
       };
       /** @description 意料之外的服务器错误 */
       500: {
         content: {
-          'application/json': components['schemas']['Error'];
+          'application/json': components['schemas']['ErrorResponse'];
         };
       };
     };
   };
-  clearNotice: {
-    /**
-     * 标记通知为已读
-     * @description 标记通知为已读
-     *
-     * 不传id时会清空所有未读通知
-     */
-    requestBody?: {
-      content: {
-        'application/json': {
-          id?: number[];
-        };
-      };
-    };
-    responses: {
-      /** @description 没有返回值 */
-      200: never;
-      /** @description 未登录 */
-      401: {
-        content: {
-          'application/json': components['schemas']['Error'];
-        };
-      };
-      /** @description 意料之外的服务器错误 */
-      500: {
-        content: {
-          'application/json': components['schemas']['Error'];
-        };
-      };
-    };
-  };
-  listSubjectCovers: {
+  /** @description 获取帖子列表 */
+  getSubjectTopicsBySubjectId: {
     parameters: {
-      /** @example 184017 */
+      query?: {
+        limit?: number;
+        offset?: number;
+      };
       path: {
         subjectID: number;
       };
@@ -778,41 +888,204 @@ export interface operations {
       200: {
         content: {
           'application/json': {
-            current?: {
-              thumbnail: string;
-              raw: string;
-            };
+            data: components['schemas']['Topic'][];
+            total: number;
+          };
+        };
+      };
+      /** @description 条目不存在 */
+      404: {
+        content: {
+          'application/json': components['schemas']['ErrorResponse'];
+        };
+      };
+      /** @description 意料之外的服务器错误 */
+      500: {
+        content: {
+          'application/json': components['schemas']['ErrorResponse'];
+        };
+      };
+    };
+  };
+  /**
+   * @description 获取当前的 wiki 信息
+   *
+   * 暂时只能修改沙盒条目 184017, 309445, 354667, 354677, 363612
+   */
+  subjectInfo: {
+    parameters: {
+      path: {
+        /** @example 363612 */
+        subjectID: number;
+      };
+    };
+    responses: {
+      /** @description Default Response */
+      200: {
+        content: {
+          'application/json': components['schemas']['SubjectWikiInfo'];
+        };
+      };
+      /** @description Default Response */
+      401: {
+        content: {
+          'application/json': components['schemas']['ErrorResponse'];
+        };
+      };
+      /** @description 意料之外的服务器错误 */
+      500: {
+        content: {
+          'application/json': components['schemas']['ErrorResponse'];
+        };
+      };
+    };
+  };
+  /**
+   * @description 暂时只能修改沙盒条目 184017,309445,354667,354677,363612
+   *
+   * 需要 `subjectWikiEdit` 权限
+   */
+  putSubjectInfo: {
+    parameters: {
+      path: {
+        /** @example 363612 */
+        subjectID: number;
+      };
+    };
+    requestBody: {
+      content: {
+        /**
+         * @example {
+         *   "commitMessage": "修正笔误",
+         *   "subject": {
+         *     "infobox": "{{Infobox animanga/TVAnime\n|中文名= 沙盒\n|别名={\n}\n|话数= 7\n|放送开始= 0000-10-06\n|放送星期= \n|官方网站= \n|播放电视台= \n|其他电视台= \n|播放结束= \n|其他= \n|Copyright= \n|平台={\n[龟壳]\n[Xbox Series S]\n[Xbox Series X]\n[Xbox Series X/S]\n[PC]\n[Xbox Series X|S]\n}\n}}",
+         *     "name": "沙盒",
+         *     "nsfw": false,
+         *     "platform": 0,
+         *     "summary": "本条目是一个沙盒，可以用于尝试bgm功能。\n\n普通维基人可以随意编辑条目信息以及相关关联查看编辑效果，但是请不要完全删除沙盒说明并且不要关联非沙盒条目/人物/角色。\n\nhttps://bgm.tv/group/topic/366812#post_1923517"
+         *   }
+         * }
+         */
+        'application/json': {
+          commitMessage: string;
+          subject: components['schemas']['SubjectEdit'];
+        };
+      };
+    };
+    responses: {
+      /** @description Default Response */
+      200: never;
+      /** @description Default Response */
+      401: {
+        content: {
+          'application/json': components['schemas']['ErrorResponse'];
+        };
+      };
+      /** @description 意料之外的服务器错误 */
+      500: {
+        content: {
+          'application/json': components['schemas']['ErrorResponse'];
+        };
+      };
+    };
+  };
+  /** @description 暂时只能修改沙盒条目 184017,309445,354667,354677,363612 */
+  patchSubjectInfo: {
+    parameters: {
+      path: {
+        /** @example 363612 */
+        subjectID: number;
+      };
+    };
+    requestBody: {
+      content: {
+        /**
+         * @example {
+         *   "commitMessage": "修正笔误",
+         *   "subject": {
+         *     "infobox": "{{Infobox animanga/TVAnime\n|中文名= 沙盒\n|别名={\n}\n|话数= 7\n|放送开始= 0000-10-06\n|放送星期= \n|官方网站= \n|播放电视台= \n|其他电视台= \n|播放结束= \n|其他= \n|Copyright= \n|平台={\n[龟壳]\n[Xbox Series S]\n[Xbox Series X]\n[Xbox Series X/S]\n[PC]\n[Xbox Series X|S]\n}\n}}"
+         *   }
+         * }
+         */
+        'application/json': {
+          commitMessage: string;
+          subject: {
+            date?: string;
+            infobox?: string;
+            name?: string;
+            nsfw?: boolean;
+            platform?: number;
+            summary?: string;
+          };
+        };
+      };
+    };
+    responses: {
+      /** @description Default Response */
+      200: never;
+      /** @description Default Response */
+      401: {
+        content: {
+          'application/json': components['schemas']['ErrorResponse'];
+        };
+      };
+      /** @description 意料之外的服务器错误 */
+      500: {
+        content: {
+          'application/json': components['schemas']['ErrorResponse'];
+        };
+      };
+    };
+  };
+  listSubjectCovers: {
+    parameters: {
+      path: {
+        /** @example 184017 */
+        subjectID: number;
+      };
+    };
+    responses: {
+      /** @description Default Response */
+      200: {
+        content: {
+          'application/json': {
             covers: {
-              id: number;
-              thumbnail: string;
-              raw: string;
               /** User */
               creator: {
-                id: number;
-                username: string;
-                nickname: string;
                 /** Avatar */
                 avatar: {
-                  small: string;
-                  medium: string;
                   large: string;
+                  medium: string;
+                  small: string;
                 };
+                id: number;
+                nickname: string;
                 sign: string;
                 user_group: number;
+                username: string;
               };
+              id: number;
+              raw: string;
+              thumbnail: string;
               voted: boolean;
             }[];
+            current?: {
+              id: number;
+              raw: string;
+              thumbnail: string;
+            };
           };
         };
       };
       /** @description 意料之外的服务器错误 */
       500: {
         content: {
-          'application/json': components['schemas']['Error'];
+          'application/json': components['schemas']['ErrorResponse'];
         };
       };
     };
   };
+  /** @description 需要 `subjectWikiEdit` 权限 */
   uploadSubjectCover: {
     parameters: {
       path: {
@@ -837,16 +1110,31 @@ export interface operations {
           'application/json': Record<string, never>;
         };
       };
+      /** @description Default Response */
+      400: {
+        content: {
+          'application/json': components['schemas']['ErrorResponse'];
+        };
+      };
+      /** @description Default Response */
+      401: {
+        content: {
+          'application/json': components['schemas']['ErrorResponse'];
+        };
+      };
       /** @description 意料之外的服务器错误 */
       500: {
         content: {
-          'application/json': components['schemas']['Error'];
+          'application/json': components['schemas']['ErrorResponse'];
         };
       };
     };
   };
+  /**
+   * 为条目封面投票
+   * @description 需要 `subjectWikiEdit` 权限
+   */
   voteSubjectCover: {
-    /** 为条目封面投票 */
     parameters: {
       path: {
         subjectID: number;
@@ -863,13 +1151,16 @@ export interface operations {
       /** @description 意料之外的服务器错误 */
       500: {
         content: {
-          'application/json': components['schemas']['Error'];
+          'application/json': components['schemas']['ErrorResponse'];
         };
       };
     };
   };
+  /**
+   * 撤消条目封面投票
+   * @description 需要 `subjectWikiEdit` 权限
+   */
   unvoteSubjectCover: {
-    /** 撤消条目封面投票 */
     parameters: {
       path: {
         subjectID: number;
@@ -886,146 +1177,20 @@ export interface operations {
       /** @description 意料之外的服务器错误 */
       500: {
         content: {
-          'application/json': components['schemas']['Error'];
+          'application/json': components['schemas']['ErrorResponse'];
         };
       };
     };
   };
-  subjectInfo: {
-    /**
-     * @description 获取当前的 wiki 信息
-     *
-     * 暂时只能修改沙盒条目 184017, 309445, 354667, 354677, 363612
-     */
-    parameters: {
-      /** @example 363612 */
-      path: {
-        subjectID: number;
-      };
-    };
-    responses: {
-      /** @description Default Response */
-      200: {
-        content: {
-          'application/json': components['schemas']['SubjectWikiInfo'];
-        };
-      };
-      /** @description Default Response */
-      401: {
-        content: {
-          'application/json': components['schemas']['Error'];
-        };
-      };
-      /** @description 意料之外的服务器错误 */
-      500: {
-        content: {
-          'application/json': components['schemas']['Error'];
-        };
-      };
-    };
-  };
-  putSubjectInfo: {
-    /** @description 暂时只能修改沙盒条目 184017,309445,354667,354677,363612 */
-    parameters: {
-      /** @example 363612 */
-      path: {
-        subjectID: number;
-      };
-    };
-    requestBody: {
-      content: {
-        /**
-         * @example {
-         *   "commitMessage": "修正笔误",
-         *   "subject": {
-         *     "name": "沙盒",
-         *     "infobox": "{{Infobox animanga/TVAnime\n|中文名= 沙盒\n|别名={\n}\n|话数= 7\n|放送开始= 0000-10-06\n|放送星期= \n|官方网站= \n|播放电视台= \n|其他电视台= \n|播放结束= \n|其他= \n|Copyright= \n|平台={\n[龟壳]\n[Xbox Series S]\n[Xbox Series X]\n[Xbox Series X/S]\n[PC]\n[Xbox Series X|S]\n}\n}}",
-         *     "platform": 0,
-         *     "nsfw": false,
-         *     "summary": "本条目是一个沙盒，可以用于尝试bgm功能。\n\n普通维基人可以随意编辑条目信息以及相关关联查看编辑效果，但是请不要完全删除沙盒说明并且不要关联非沙盒条目/人物/角色。\n\nhttps://bgm.tv/group/topic/366812#post_1923517"
-         *   }
-         * }
-         */
-        'application/json': {
-          commitMessage: string;
-          subject: components['schemas']['SubjectEdit'];
-        };
-      };
-    };
-    responses: {
-      /** @description Default Response */
-      200: never;
-      /** @description Default Response */
-      401: {
-        content: {
-          'application/json': components['schemas']['Error'];
-        };
-      };
-      /** @description 意料之外的服务器错误 */
-      500: {
-        content: {
-          'application/json': components['schemas']['Error'];
-        };
-      };
-    };
-  };
-  patchSubjectInfo: {
-    /** @description 暂时只能修改沙盒条目 184017,309445,354667,354677,363612 */
-    parameters: {
-      /** @example 363612 */
-      path: {
-        subjectID: number;
-      };
-    };
-    requestBody: {
-      content: {
-        /**
-         * @example {
-         *   "commitMessage": "修正笔误",
-         *   "subject": {
-         *     "infobox": "{{Infobox animanga/TVAnime\n|中文名= 沙盒\n|别名={\n}\n|话数= 7\n|放送开始= 0000-10-06\n|放送星期= \n|官方网站= \n|播放电视台= \n|其他电视台= \n|播放结束= \n|其他= \n|Copyright= \n|平台={\n[龟壳]\n[Xbox Series S]\n[Xbox Series X]\n[Xbox Series X/S]\n[PC]\n[Xbox Series X|S]\n}\n}}"
-         *   }
-         * }
-         */
-        'application/json': {
-          commitMessage: string;
-          subject: {
-            name?: string;
-            infobox?: string;
-            platform?: number;
-            nsfw?: boolean;
-            date?: string;
-            summary?: string;
-          };
-        };
-      };
-    };
-    responses: {
-      /** @description Default Response */
-      200: never;
-      /** @description Default Response */
-      401: {
-        content: {
-          'application/json': components['schemas']['Error'];
-        };
-      };
-      /** @description 意料之外的服务器错误 */
-      500: {
-        content: {
-          'application/json': components['schemas']['Error'];
-        };
-      };
-    };
-  };
+  /**
+   * @description 获取当前的 wiki 信息
+   *
+   * 暂时只能修改沙盒条目 184017, 309445, 354667, 354677, 363612
+   */
   subjectEditHistorySummary: {
-    /**
-     * @description 获取当前的 wiki 信息
-     *
-     * 暂时只能修改沙盒条目 184017, 309445, 354667, 354677, 363612
-     */
     parameters: {
-      /** @example 8 */
       path: {
+        /** @example 8 */
         subjectID: number;
       };
     };
@@ -1039,13 +1204,13 @@ export interface operations {
       /** @description Default Response */
       401: {
         content: {
-          'application/json': components['schemas']['Error'];
+          'application/json': components['schemas']['ErrorResponse'];
         };
       };
       /** @description 意料之外的服务器错误 */
       500: {
         content: {
-          'application/json': components['schemas']['Error'];
+          'application/json': components['schemas']['ErrorResponse'];
         };
       };
     };

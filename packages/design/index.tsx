@@ -1,4 +1,5 @@
 export { default as Button } from './components/Button';
+export { default as CollapsibleContent } from './components/CollapsibleContent';
 export { default as Typography } from './components/Typography';
 export { default as Rate } from './components/Rate';
 export { default as Image } from './components/Image';
@@ -16,6 +17,8 @@ export { default as Layout } from './components/Layout';
 export { default as Form } from './components/Form';
 export { default as Select } from './components/Select';
 export { default as Radio } from './components/Radio';
+export { default as Message } from './components/Message';
+export { default as Popover } from './components/Popover';
 export { toast } from './components/Toast';
 
 export type { ButtonProps } from './components/Button';
@@ -32,3 +35,5 @@ export type { EditorFormProps } from './components/EditorForm';
 export type { RichContentProps } from './components/RichContent';
 export type { PaginationProps } from './components/Pagination';
 export type { LayoutProps } from './components/Layout';
+export type { MessageType } from './components/Message';
+export type { PopoverProps } from './components/Popover';

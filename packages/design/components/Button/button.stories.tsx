@@ -1,12 +1,17 @@
-import type { ComponentMeta, Story } from '@storybook/react';
+import type { Meta, StoryFn } from '@storybook/react';
+import type { FC } from 'react';
 import React from 'react';
+import { MemoryRouter } from 'react-router-dom';
 
-import type { ButtonProps } from '.';
+import { ArrowRightCircle } from '@bangumi/icons';
+
+import type { ButtonLinkProps, ButtonProps } from '.';
 import Button from '.';
 
-const storyMeta: ComponentMeta<typeof Button> = {
+const storyMeta: Meta<typeof Button> = {
   title: 'modern/Button',
   component: Button,
+  subcomponents: { 'Button.Link': Button.Link as FC<unknown> },
   argTypes: {
     disabled: { control: 'boolean' },
     color: { control: 'select', options: ['default', 'blue', 'gray'] },
@@ -23,7 +28,7 @@ const storyMeta: ComponentMeta<typeof Button> = {
 
 export default storyMeta;
 
-const Template: Story<ButtonProps> = (args) => {
+const Template: StoryFn<ButtonProps> = (args) => {
   return <Button {...args}>{args.children ?? 'Click Me!'}</Button>;
 };
 
@@ -100,4 +105,48 @@ Disabled.args = {
   type: 'primary',
   disabled: true,
   children: 'Disabled',
+};
+
+const ButtonLinkTemplate: StoryFn<ButtonLinkProps> = (args) => {
+  return (
+    <MemoryRouter>
+      <Button.Link {...args}>{args.children}</Button.Link>
+    </MemoryRouter>
+  );
+};
+
+export const Link = ButtonLinkTemplate.bind({});
+Link.args = {
+  to: 'https://bgm.tv',
+  isExternal: true,
+  target: '_blank',
+  children: 'Bangumi 番组计划',
+};
+Link.parameters = {
+  docs: {
+    description: {
+      story: '按钮的链接版本，使用方法与 `Typography.Link` 相同。',
+    },
+  },
+};
+
+export const Plain = ButtonLinkTemplate.bind({});
+Plain.args = {
+  to: 'https://bgm.tv',
+  isExternal: true,
+  target: '_blank',
+  type: 'plain',
+  children: (
+    <>
+      更多小组成员
+      <ArrowRightCircle />
+    </>
+  ),
+};
+Plain.parameters = {
+  docs: {
+    description: {
+      story: '无内边距、边框及圆角，最小高度。',
+    },
+  },
 };

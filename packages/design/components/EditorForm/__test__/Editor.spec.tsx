@@ -136,11 +136,16 @@ describe('EditorForm > Editor', () => {
     expect(container.querySelector('.bgm-editor__toolbox')).not.toBeInTheDocument();
   });
 
+  it('showWordCount props', () => {
+    const { container } = render(<Editor showWordCount={false} />);
+    expect(container.querySelector('.bgm-editor__wordcount')).not.toBeInTheDocument();
+  });
+
   it('click toolbox should have correct behavior', () => {
     const { textarea, setValue } = initTextareaTest({ placeholder: 'Hello' });
 
     const mockValue = 'https://lain.bgm.tv/pic/cover/l/65/19/364450_9lB1T.jpg';
-    const prompt = jest.spyOn(window, 'prompt').mockImplementation(() => mockValue);
+    const prompt = vi.spyOn(window, 'prompt').mockImplementation(() => mockValue);
 
     ['bold', 'italic', 'underscore', 'image', 'link', 'size'].forEach((type) => {
       // init
@@ -165,7 +170,7 @@ describe('EditorForm > Editor', () => {
     const { textarea, setValue } = initTextareaTest({ placeholder: 'Hello' });
 
     const mockValue = 'https://lain.bgm.tv/pic/cover/l/65/19/364450_9lB1T.jpg';
-    const prompt = jest.spyOn(window, 'prompt').mockImplementation(() => mockValue);
+    const prompt = vi.spyOn(window, 'prompt').mockImplementation(() => mockValue);
 
     ['bold', 'italic', 'underscore', 'image', 'link', 'size'].forEach((type) => {
       // init
@@ -190,7 +195,7 @@ describe('EditorForm > Editor', () => {
   });
 
   it('onConfirm keyboard event', () => {
-    const onConfirm = jest.fn();
+    const onConfirm = vi.fn();
     const { textarea } = initTextareaTest({ placeholder: 'Hello', onConfirm });
 
     textarea.value = 'test111';
@@ -210,7 +215,7 @@ describe('EditorForm > Editor', () => {
     const { textarea, setValue } = initTextareaTest({ placeholder: 'Hello' });
 
     const mockValue = 'https://lain.bgm.tv/pic/cover/l/65/19/364450_9lB1T.jpg';
-    const prompt = jest.spyOn(window, 'prompt').mockImplementation(() => mockValue);
+    const prompt = vi.spyOn(window, 'prompt').mockImplementation(() => mockValue);
 
     for (const key of Object.keys(keyToEvent)) {
       const type = keyToEvent[key as keyof typeof keyToEvent];
@@ -238,7 +243,7 @@ describe('EditorForm > Editor', () => {
     const { textarea, setValue } = initTextareaTest({ placeholder: 'Hello' });
 
     const mockValue = 'https://lain.bgm.tv/pic/cover/l/65/19/364450_9lB1T.jpg';
-    const prompt = jest.spyOn(window, 'prompt').mockImplementation(() => mockValue);
+    const prompt = vi.spyOn(window, 'prompt').mockImplementation(() => mockValue);
 
     for (const key of Object.keys(keyToEvent)) {
       const type = keyToEvent[key as keyof typeof keyToEvent];
@@ -265,5 +270,10 @@ describe('EditorForm > Editor', () => {
       }
       prompt.mockClear();
     }
+  });
+
+  it('word count is working when input contains unicode', () => {
+    const { getByText } = render(<Editor value='123👍' />);
+    expect(getByText('已输入 4 字')).toBeInTheDocument();
   });
 });

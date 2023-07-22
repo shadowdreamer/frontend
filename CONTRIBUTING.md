@@ -2,14 +2,6 @@
 
 首先欢迎为新 Bangumi 的前端项目添砖加瓦。
 
-## 项目状态
-
-可以在 tracking dashboard https://github.com/orgs/bangumi/projects/6 查看目前各个 issue 的进展。
-
-- Blocked: 缺少 API 或者缺少设计。
-- Todo: 有相关的 API 和设计，但是缺少前端实现。
-- In Progress：已经有相关的 pull request
-
 ## 开始
 
 - 通过右上角的 Fork 按钮或者点击[这个链接](https://github.com/bangumi/frontend/fork)
@@ -56,7 +48,9 @@ pnpm dev
 pnpm dev --mode production
 ```
 
-- 提交前确认所有的测试、lint 通过；
+参照[代码风格指印](./docs/code-style.md)
+
+- 提交前确认所有的测试、lint 通过
 
 ```bash
 pnpm test
@@ -75,6 +69,8 @@ git push -u origin <YOUR_BRANCH>
 ## PR 规则
 
 - PR 的标题需要满足 [Conventional Commits](https://www.conventionalcommits.org/en/v1.0.0/) 规范的要求
+- 尚未完成的 PR 请在标题中添加 `[WIP]`，或者设置为 draft 状态。
+- ci 会对 PR 进行构建并进行部署，如果涉及 UI 修改，在预览上传成功后请修改 PR 说明添加预览 URL。
 
 ### 在合并之前
 
@@ -83,18 +79,20 @@ git push -u origin <YOUR_BRANCH>
   - PR 只包含 typo 的修复；
   - PR 只关于项目架构的维护（如 Github Action 的维护）；
   - PR 只包括测试用例的变更；
-- 在 48 小时之内，没有 Collaborator 要求更改；
 - 所有关于新特性与缺陷修复的 PR 都必须包含对应测试用例；
 - 如果在 `packages/design` 下面添加新的组件，需要包含一个 storybook 作为组件文档；
+- test/lint/build 等 ci 应该通过。
+
+在 PR 打开 48 小时并被任意两位 collaborator approve 之后会被 bot 自动合并。
 
 ## 如何成为 Collaborator
 
 - Collaborator 需要对项目作出活跃的贡献；
 - 想要成为 Collaborator 的话，需要向 `README.md` 文件的 Collaborator 小节提起 PR，
   将自己添加到 Collaborator 列表中（注意列表以 GitHub ID 的字典序排列）；
-- PR 需要被至少一名 Collaborator approve；
+- PR 需要被至少两名 Collaborator approve；
 - PR 在打开 48 小时之后没有反对意见；
-- 当上述条件满足，PR 将会被合并，然后邀请新同学成为 @bangumi/frontend 组的成员；
+- 当上述条件满足，PR 将会被合并，然后邀请新同学成为 @bangumi/frontend-collaborators 组的成员；
 
 ## Developer's Certificate of Origin 1.1
 

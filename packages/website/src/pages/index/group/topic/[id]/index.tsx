@@ -5,6 +5,8 @@ import { useNavigate, useParams } from 'react-router-dom';
 
 import { Avatar, Layout, RichContent, Topic } from '@bangumi/design';
 import ReplyForm from '@bangumi/design/components/Topic/ReplyForm';
+import Helmet from '@bangumi/website/components/Helmet';
+import { useGroup } from '@bangumi/website/hooks/use-group';
 import useGroupTopic from '@bangumi/website/hooks/use-group-topic';
 import { useUser } from '@bangumi/website/hooks/use-user';
 
@@ -12,7 +14,7 @@ import GroupInfo from '../../components/GroupInfo';
 import GroupTopicHeader from './components/GroupTopicHeader';
 import styles from './index.module.less';
 
-const { Comment } = Topic;
+const { Comment, CommentActions } = Topic;
 
 const TopicPage: FC = () => {
   const { id } = useParams();
@@ -25,6 +27,7 @@ const TopicPage: FC = () => {
   const originalPosterId = topicDetail.creator.id;
   const isClosed = topicDetail.state === 1;
   const { group } = topicDetail;
+  const { group: groupProfile } = useGroup(group.name);
 
   const [replyContent, setReplyContent] = useState('');
 
@@ -43,8 +46,15 @@ const TopicPage: FC = () => {
     setReplyContent('');
   };
 
+  const startReply = () => {
+    const replyForm = document.getElementById('replyForm');
+    replyForm?.scrollIntoView(true);
+    replyForm?.querySelector('textarea')?.focus();
+  };
+
   return (
     <>
+      <Helmet title={topicDetail.title} />
       <GroupTopicHeader
         id={topicDetail.id}
         title={topicDetail.title}
@@ -59,6 +69,17 @@ const TopicPage: FC = () => {
             {/* Topic content */}
             <div id={`post_${topicDetail.id}`}>
               <RichContent bbcode={topicDetail.text} />
+              {user && (
+                <div className={styles.topicActions}>
+                  <CommentActions
+                    showText
+                    id={topicDetail.id}
+                    isAuthor={user.id === topicDetail.creator.id}
+                    onReply={startReply}
+                    // TODO: 实现删除主题操作
+                  />
+                </div>
+              )}
             </div>
             {/* Topic Comments */}
             <div className={styles.replies}>
@@ -70,13 +91,13 @@ const TopicPage: FC = () => {
                   floor={idx + 2}
                   originalPosterId={originalPosterId}
                   user={user}
-                  onReplySuccess={mutate}
+                  onCommentUpdate={mutate}
                   {...comment}
                 />
               ))}
               {/* Reply BBCode Editor */}
               {!isClosed && user && (
-                <div className={styles.replyFormContainer}>
+                <div className={styles.replyFormContainer} id='replyForm'>
                   <Avatar src={user.avatar.large} size='medium' />
                   <ReplyForm
                     topicId={topicDetail.id}
@@ -91,7 +112,7 @@ const TopicPage: FC = () => {
             </div>
           </>
         }
-        rightChildren={<GroupInfo group={group} />}
+        rightChildren={<GroupInfo groupProfile={groupProfile} />}
       />
     </>
   );

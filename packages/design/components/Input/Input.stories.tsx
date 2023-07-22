@@ -1,55 +1,50 @@
-import type { ComponentMeta, Story } from '@storybook/react';
+import type { Meta, StoryFn } from '@storybook/react';
+import type { FC } from 'react';
 import React from 'react';
 
 import { Search as SearchIcon, UserLogin } from '@bangumi/icons';
 
 import Select from '../Select';
-import type { InputProps } from '.';
+import type { InputGroupProps, InputProps } from '.';
 import Input from '.';
 
-const componentMeta: ComponentMeta<typeof Input> = {
+const componentMeta: Meta<typeof Input> = {
   title: 'modern/Input',
   component: Input,
+  subcomponents: { 'Input.Group': Input.Group as FC<unknown> },
 };
 
 export default componentMeta;
 
-/* eslint-disable react/prop-types */
-const Template: Story<InputProps> = ({
-  placeholder,
-  type,
-  prefix,
-  suffix,
-  wrapperClass,
-  wrapperStyle,
-}) => {
-  return (
-    <Input
-      placeholder={placeholder}
-      type={type}
-      prefix={prefix}
-      suffix={suffix}
-      wrapperClass={wrapperClass}
-      wrapperStyle={wrapperStyle}
-    />
-  );
+const Template: StoryFn<InputProps & React.RefAttributes<HTMLInputElement>> = (args) => {
+  return <Input {...args} />;
 };
-/* eslint-enable react/prop-types */
 
 export const Default = Template.bind({});
 
-const loginStyle = {
-  width: 320,
-  height: 38,
+Default.args = {
+  placeholder: '你的 Email 地址',
 };
 
-export const Login = Template.bind({});
+const loginStyle = {
+  width: 320,
+};
 
-Login.args = {
+export const IconPrefix = Template.bind({});
+
+IconPrefix.args = {
   placeholder: '你的 Email 地址',
   type: 'email',
-  prefix: <UserLogin style={{ marginRight: 12.5 }} />,
+  prefix: <UserLogin />,
   wrapperStyle: loginStyle,
+};
+
+export const TextPrefix = Template.bind({});
+
+TextPrefix.args = {
+  placeholder: '填写对方的 username',
+  prefix: '收件人:',
+  rounded: true,
 };
 
 export const Password = Template.bind({});
@@ -81,13 +76,19 @@ NavSearch.args = {
   },
 };
 
-const InputGroupTemplate = () => {
+export const Rounded = Template.bind({});
+Rounded.args = {
+  placeholder: '取个标题…',
+  rounded: true,
+};
+
+const InputGroupTemplate = (args: InputGroupProps) => {
   return (
-    <Input.Group>
+    <Input.Group {...args}>
       <Select options={[{ label: '你好', value: '你好' }]} defaultValue='你好' />
       <Input />
       <Input />
-      <Input />
+      <Input rounded />
     </Input.Group>
   );
 };

@@ -2,6 +2,12 @@
 
 @import '@bangumi/design/theme/base';
 
+.topicActions {
+  display: flex;
+  margin-top: 12px;
+  flex-direction: row-reverse;
+}
+
 .replies {
   margin-top: 40px;
 }
@@ -12,6 +18,11 @@
   margin-top: 20px;
 
   .replyForm {
+    @media (max-width: @md) {
+      flex-basis: 100%;
+    }
+
+    flex-basis: 75%;
     margin-left: 12px;
   }
 }

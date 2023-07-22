@@ -1,15 +1,16 @@
 {
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
-  "extends": ["config:base", "schedule:yearly"],
+  "extends": ["config:base", "github>trim21/renovate-config:monthly"],
   "timezone": "Asia/Shanghai",
   "baseBranches": ["master"],
   "separateMajorMinor": true,
   "separateMinorPatch": false,
   "rangeStrategy": "bump",
   "semanticCommits": "enabled",
+  "prConcurrentLimit": 2,
   "labels": ["dependencies"],
+  "postUpdateOptions": ["pnpmDedupe"],
   "lockFileMaintenance": {
-    "extends": ["github>Trim21/renovate-config:monthly"],
     "enabled": true
   },
   "packageRules": [
@@ -26,12 +27,6 @@
       "matchPackagePrefixes": ["@typescript-eslint/", "eslint"],
       "separateMajorMinor": true,
       "semanticCommitType": "style"
-    },
-    {
-      "groupName": "vite",
-      "matchPackagePrefixes": ["@vitejs/", "vite"],
-      "separateMajorMinor": true,
-      "semanticCommitType": "build"
     },
     {
       "matchManagers": ["github-actions"],

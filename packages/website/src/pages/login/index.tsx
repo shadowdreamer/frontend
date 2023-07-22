@@ -1,11 +1,12 @@
 import type { TurnstileInstance } from '@marsidev/react-turnstile';
 import { Turnstile } from '@marsidev/react-turnstile';
 import React, { useRef } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useInput } from 'rooks';
 
-import { Button, Input } from '@bangumi/design';
+import { Button, Input, Message } from '@bangumi/design';
 import { Password, UserLogin } from '@bangumi/icons';
+import Helmet from '@bangumi/website/components/Helmet';
 
 import {
   CaptureError,
@@ -15,7 +16,6 @@ import {
   useUser,
 } from '../../hooks/use-user';
 import { ReactComponent as LoginLogo } from './assets/login-logo.svg';
-import ErrorMessage from './components/ErrorMessage';
 import style from './index.module.less';
 
 const Login: React.FC = () => {
@@ -25,6 +25,7 @@ const Login: React.FC = () => {
   const password = useInput('' as string);
   const { login } = useUser();
   const navigate = useNavigate();
+  const [searchParams, _] = useSearchParams();
 
   const [errorMessage, setErrorMessage] = React.useState<string | null>(null);
 
@@ -34,6 +35,18 @@ const Login: React.FC = () => {
     [LoginErrorCode.E_CLIENT_ERROR]: '请求错误',
     [LoginErrorCode.E_TOO_MANY_ERROR]: '登录失败次数太多，请过段时间再重试',
     [LoginErrorCode.E_SERVER_ERROR]: '服务器错误，请稍后重试',
+  };
+
+  const successRedirect = () => {
+    // 如果有 backTo 参数，则跳转到指定的页面
+    const backTo = searchParams.get('backTo');
+    if (backTo) {
+      navigate(backTo.startsWith('/') ? backTo : '/', { replace: true });
+    }
+    // 否则跳转到首页
+    else {
+      navigate('/', { replace: true });
+    }
   };
 
   const handleLogin = async () => {
@@ -54,7 +67,7 @@ const Login: React.FC = () => {
 
     try {
       await login(email.value, password.value, captchaToken);
-      navigate('/', { replace: true });
+      successRedirect();
     } catch (error: unknown) {
       captcha.current?.reset();
       setCaptchaToken(null);
@@ -86,43 +99,42 @@ const Login: React.FC = () => {
   };
 
   return (
-    <div className={style.wrapper}>
-      <div className={style.container}>
-        <LoginLogo className={style.logo} />
-        {errorMessage && <ErrorMessage message={errorMessage} />}
-        <Input
-          type='email'
-          prefix={<UserLogin className={style.icon} />}
-          placeholder='你的 Email 地址'
-          {...email}
-        />
-        <Input
-          type='password'
-          prefix={<Password className={style.icon} />}
-          placeholder='你的登录密码'
-          {...password}
-        />
-        <div className={style.hcaptcha}>
-          <Turnstile
-            options={{
-              theme: 'light',
-              action: 'login',
-            }}
-            siteKey={import.meta.env.VITE_TURNSTILE_SITE_KEY}
-            onSuccess={(token: string) => setCaptchaToken(token)}
-            ref={captcha}
-          />
-        </div>
-        <div className={style.buttonGroup}>
-          <Button className={style.button} color='gray' disabled>
-            注册新用户
-          </Button>
-          <Button className={style.button} onClick={handleLogin}>
-            登录
-          </Button>
+    <>
+      <Helmet title='登录' />
+      <div className={style.wrapper}>
+        <div className={style.container}>
+          <LoginLogo className={style.logo} />
+          {errorMessage && (
+            <Message type='error' blockWidth>
+              {errorMessage}
+            </Message>
+          )}
+          <Input type='email' prefix={<UserLogin />} placeholder='你的 Email 地址' {...email} />
+          <Input type='password' prefix={<Password />} placeholder='你的登录密码' {...password} />
+          <div className={style.hcaptcha}>
+            <Turnstile
+              options={{
+                theme: 'light',
+                action: 'login',
+              }}
+              siteKey={import.meta.env.VITE_TURNSTILE_SITE_KEY}
+              onSuccess={(token: string) => {
+                setCaptchaToken(token);
+              }}
+              ref={captcha}
+            />
+          </div>
+          <div className={style.buttonGroup}>
+            <Button className={style.button} color='gray' disabled>
+              注册新用户
+            </Button>
+            <Button className={style.button} onClick={handleLogin}>
+              登录
+            </Button>
+          </div>
         </div>
       </div>
-    </div>
+    </>
   );
 };
 

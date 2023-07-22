@@ -2,7 +2,6 @@ module.exports = {
   env: {
     browser: true,
     es2021: true,
-    'jest/globals': true,
   },
   extends: ['standard-with-typescript', 'prettier'],
   plugins: ['unused-imports', 'unicorn', 'simple-import-sort'],
@@ -46,7 +45,7 @@ module.exports = {
   },
   overrides: [
     {
-      files: ['*.ts', '*.tsx'],
+      files: ['*.ts', '*.mts', '*.cts', '*.tsx'],
       extends: [
         'standard-with-typescript',
         'standard-jsx',
@@ -57,7 +56,7 @@ module.exports = {
         'prettier',
       ],
       parser: '@typescript-eslint/parser',
-      plugins: ['react', '@typescript-eslint', 'jest'],
+      plugins: ['react', '@typescript-eslint'],
       parserOptions: {
         project: './tsconfig.json',
       },
@@ -123,6 +122,7 @@ module.exports = {
         // 限制了一些不需要显示指明类型的场景，比如自动推导，导致了一些多余代码
         '@typescript-eslint/explicit-function-return-type': 'off',
         'react/jsx-closing-tag-location': 'off',
+        'import/consistent-type-specifier-style': ['error', 'prefer-top-level'],
       },
     },
     {
@@ -140,6 +140,8 @@ module.exports = {
         '@typescript-eslint/no-unsafe-argument': 'off',
         '@typescript-eslint/no-unsafe-member-access': 'off',
         '@typescript-eslint/no-explicit-any': 'off',
+        '@typescript-eslint/consistent-type-imports': ['error', { disallowTypeAnnotations: false }],
+        '@typescript-eslint/consistent-type-assertions': 'off',
       },
     },
   ],
